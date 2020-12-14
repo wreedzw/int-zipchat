@@ -24,7 +24,10 @@ a. Channel name to the orgConfig
 b. Channel name to Install page
 b. Member list to the orgConfig
 c. Settings page to display Channel name and Member list
-d. 
+d. Send Welcome message when user joins
+e. Forward messages to all users (except message author) when message recieved from a member
+f. Implement LEAVE keyword
+g. Perform testing
 
 ### Running ZipChat Locally
 
