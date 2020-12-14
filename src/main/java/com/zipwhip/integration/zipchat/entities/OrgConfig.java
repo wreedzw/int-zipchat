@@ -16,4 +16,8 @@ public class OrgConfig {
 
   /** The name of this Channel */
   String channelName;
+
+  public Long getOrgCustomerId() {
+    return orgCustomerId;
+  }
 }

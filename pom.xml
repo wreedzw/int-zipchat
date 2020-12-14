@@ -57,11 +57,6 @@
     </dependency>
     <dependency>
       <groupId>com.zipwhip.integration</groupId>
-      <artifactId>int-contactsync-shared</artifactId>
-      <version>${int-contactsync.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.zipwhip.integration</groupId>
       <artifactId>int-text-from-external-lib</artifactId>
       <version>${int-text-from-external.version}</version>
     </dependency>
@@ -95,16 +90,6 @@
     </dependency>
   </dependencies>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>com.zipwhip.integration</groupId>
-        <artifactId>int-poller-lib</artifactId>
-        <version>${int-poller.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <build>
     <plugins>
 
@@ -115,7 +100,6 @@
         <version>${jacoco.version}</version>
         <configuration>
           <excludes>
-            <exclude>**/com/zipwhip/integration/guidewire/stub/**</exclude>
           </excludes>
         </configuration>
         <executions>
@@ -125,7 +109,6 @@
             </goals>
             <configuration>
               <excludes>
-                <exclude>com.zipwhip.integration.guidewire.stub.*</exclude>
               </excludes>
             </configuration>
           </execution>
@@ -137,7 +120,6 @@
             </goals>
             <configuration>
               <excludes>
-                <exclude>com.zipwhip.integration.guidewire.stub.*</exclude>
               </excludes>
             </configuration>
           </execution>
@@ -161,9 +143,12 @@
                 <rule>
                   <element>CLASS</element>
                   <excludes>
-                    <exclude>com.zipwhip.integration.guidewire.stub.*</exclude>
-                    <exclude>*GuidewireApp</exclude>
-                    <exclude>*CloudConfig</exclude>
+                    <exclude>*App</exclude>
+                    <exclude>*config.*Config</exclude>
+                    <exclude>*config.*Config.*</exclude>
+                    <exclude>*Exception</exclude>
+                    <exclude>*Exception*</exclude>
+                    <exclude>*ApiError*</exclude>
                   </excludes>
                   <limits>
                     <limit>
