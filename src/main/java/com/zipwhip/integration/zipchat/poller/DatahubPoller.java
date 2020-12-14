@@ -57,18 +57,6 @@ public class DatahubPoller extends AbstractPoller<DatahubPoller.ZipChatExecution
   private MessageProcessingRecorder messageProcessingRecorder;
 
   /**
-   * Flag indicating if any sync is enabled on this service
-   */
-  @Value("${features.sync.enabled:true}")
-  private boolean syncEnabled;
-
-  /**
-   * Flag indicating if this service is configured for processing of contacts
-   */
-  @Value("${features.sync.contact.enabled:false}")
-  private boolean contactSyncEnabled;
-
-  /**
    * The name of the application
    */
   @Value("${spring.application.name:Guidewire}")
@@ -87,21 +75,6 @@ public class DatahubPoller extends AbstractPoller<DatahubPoller.ZipChatExecution
                          ZipChatExecutionContext context,
                          RateLimiter rateLimited) {
 
-    try {
-      MDC.put(MDCFields.ORG_CUSTOMER_ID, context.getOrgConfig().getOrgCustomerId());
-      //If sync is enabled, process the message
-      if (syncEnabled) {
-        records.forEach(x -> processRecord(x, context));
-        context.commit();
-      } else {
-        log.warn("Sync feature disabled at service level, skipping");
-      }
-    } catch (Exception e) {
-      log.error("Unhandled error", e);
-      throw e;
-    } finally {
-      MDC.clear();
-    }
 
   }
 
@@ -113,15 +86,6 @@ public class DatahubPoller extends AbstractPoller<DatahubPoller.ZipChatExecution
    * @param orgCustomerId The orgCustomerId processing the message
    */
   public void forceProcessRecord(InboundBase<?> toProcess, Long orgCustomerId) {
-    OrgConfig orgConfig = orgConfigRepository.findById(orgCustomerId).orElse(null);
-    if (orgConfig != null) {
-      ZipChatExecutionContext context = new ZipChatExecutionContext(orgConfig);
-      ConsumerRecord<String, InboundBase<?>> record = new ConsumerRecord<>("forced", 0, 0, null,
-              toProcess);
-      processRecord(record, context);
-    } else {
-      log.warn("No org config found for {}; cannot process message", orgCustomerId);
-    }
 
   }
 
@@ -134,93 +98,6 @@ public class DatahubPoller extends AbstractPoller<DatahubPoller.ZipChatExecution
   private void processRecord(ConsumerRecord<String, InboundBase<?>> record,
                              ZipChatExecutionContext context) {
 
-    boolean success = false;
-    OrgConfig orgConfig = context.getOrgConfig();
-    Long orgId = context.getOrgConfig().getOrgCustomerId();
-    MDC.put(MDCFields.ORG_CUSTOMER_ID, orgId);
-
-    //Only perform processing if sync is enabled
-    if (syncEnabled) {
-      try {
-        InboundBase<?> base = record.value();
-
-        //Process as message
-        if (base instanceof InboundMessage) {
-
-          //Extract critical logging info
-          MDCUtil.startFeature(IntegrationFeature.MESSAGE_TO_EXTERNAL);
-          InboundMessage message = (InboundMessage) base;
-          Long messageId = message.getPayload().getId();
-          if (messageProcessingRecorder.startProcessing(MESSAGE, messageId, appName)) {
-            MDC.put(MDCFields.MSG_ID, messageId);
-            try {
-              MDC.put(MDCFields.LANDLINE, MessageUtils.getLandline(message));
-              MDC.put(MDCFields.MOBILE, MessageUtils.getPhone(message));
-            } catch (NullPointerException e) {
-              log
-                      .warn("Failed to setup MDC fields for message: {}; {}", message, e.getMessage(), e);
-            }
-
-            //Log message
-            log.info("Processing message ID {}. Org ID {}", messageId, orgId);
-
-            try {
-
-              //Process message
-              syncService.processMessage(message, orgConfig);
-
-              log.info("Processing message ID {}. Org ID {}. Done", messageId, orgId);
-              success = true;
-
-            } catch (Exception e) {
-              log.error("Failed to process message {}; {}", message, e.getMessage(), e);
-            } finally {
-              messageProcessingRecorder
-                      .completeProcessing(success ? RECORD_PROCESSED : FAILED_TO_PROCESS, MESSAGE,
-                              messageId, appName);
-            }
-          }
-
-        } else if (base instanceof InboundContact && ("save".equals(base.getAction()) || "new"
-                .equals(base.getAction()))) {
-
-          //Process as message
-          if (contactSyncEnabled) {
-
-            //Extract critical logging info
-            MDCUtil.startFeature(IntegrationFeature.CONTACT_TO_EXTERNAL);
-            InboundContact contact = (InboundContact) base;
-            Long contactId = contact.getPayload().getId();
-
-            //Log contact
-            log.info("Processing contact ID {}. Org ID {}", contactId, orgId);
-
-            try {
-              messageProcessingRecorder.startProcessing(CONTACT, contactId, appName);
-
-              log.info("Processing contact ID {}. Org ID {}. Done", contactId, orgId);
-              success = true;
-
-            } catch (Exception e) {
-              log.error("Failed to process contact {}; {}", contact, e.getMessage(), e);
-            } finally {
-              messageProcessingRecorder
-                      .completeProcessing(success ? RECORD_PROCESSED : FAILED_TO_PROCESS, CONTACT,
-                              contactId, appName);
-            }
-
-          } else {
-            log.debug("Contact Sync feature disabled at service level, skipping");
-          }
-
-        }
-      } finally {
-        MDCUtil.endFeature(success ? CompletionCode.SUCCESS : CompletionCode.FAILURE);
-        MDC.clear();
-      }
-    } else {
-      log.warn("Sync feature disabled at service level, skipping");
-    }
   }
 
   /**

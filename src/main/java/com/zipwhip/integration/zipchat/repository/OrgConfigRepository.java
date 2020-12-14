@@ -8,12 +8,4 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  */
 public interface OrgConfigRepository extends MongoRepository<OrgConfig, Long> {
 
-  /**
-   * Finds an orgConfig with the matching token
-   *
-   * @param zipwhipToken The token to use as the criteria
-   * @return The orgConfig, if found
-   */
-  OrgConfig findByZipwhipToken(String zipwhipToken);
-
 }

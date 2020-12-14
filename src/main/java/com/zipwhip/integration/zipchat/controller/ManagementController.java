@@ -1,6 +1,5 @@
 package com.zipwhip.integration.zipchat.controller;
 
-
 import com.zipwhip.integration.zipchat.entities.OrgConfig;
 import com.zipwhip.integration.zipchat.poller.DatahubPoller;
 import com.zipwhip.integration.zipchat.repository.OrgConfigRepository;
