@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: int-zipchat
+  cloud:
+    consul:
+      host: ${discovery.host:consul.consul}
+      port: ${discovery.port:8500}
+      config:
+        watch:
+          wait-time: 30
+        profile-separator: "-"
+        format: files
+      discovery:
+        prefer-ip-address: true
+        healthCheckPath: /${spring.application.name}/health
+        instanceId: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+---
+
+spring:
+  profiles: junit, mongo, web, kafka
+  cloud:
+    bus:
+      enabled: false
+    consul:
+      enabled: false
+      config:
+        enabled: false

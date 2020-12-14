@@ -1,0 +1,59 @@
+
+feign.hystrix.enabled: false
+ribbon.eureka.enabled: false
+
+server.servlet.context-path: /int-zipchat-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, prometheus
+
+poller:
+  integrationId: 22
+  refreshPeriod: 10000
+  pollRecords: 1
+  suspendDuration: 2
+
+zipwhip:
+  environment-service.url: dummyUrl
+  toolkit.customer-service.url: dummyUrl
+  login.url: dummyUrl
+  toolkit.url:
+    bs: dummyUrl
+    legacy: dummyUrl
+  api.url:
+    bs: dummyUrl
+    legacy: dummyUrl
+  security:
+    line-ownership:
+      provisioner: true
+
+account.console:
+  domain: app.dev.int.zipwhip.com
+
+zipchat:
+  max-retry-count:
+    activeToClosed: 6
+    closedToStaged: 6
+    stagedToStored: 6
+  domain: app.dev.int.zipwhip.com
+
+features:
+  message-sync:
+    attachments:
+      type-whitelist:
+        - image/jpg
+        - image/jpeg
+        - image/gif
+        - image/png
+        - image/bmp
+        - audio/mp3
+        - audio/wav
+        - video/3gp
+        - video/3gpp
+        - video/mp4
+      type-ignorelist:
+        - application/smil
+        - text/plain

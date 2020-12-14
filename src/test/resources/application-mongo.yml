@@ -1,0 +1,47 @@
+
+feign.hystrix.enabled: false
+ribbon.eureka.enabled: false
+
+security:
+  ignored:
+    - "*/**"
+
+server.servlet.context-path: /int-zipchat-service
+
+poller:
+  integrationId: 22
+  refreshPeriod: 10000
+  pollRecords: 1
+  suspendDuration: 2
+  
+zipwhip:
+  environment-service.url: dummyUrl
+  toolkit.customer-service.url: dummyUrl
+  login.url: dummyUrl
+  toolkit.url:
+    bs: dummyUrl
+    legacy: dummyUrl
+  api.url:
+    bs: dummyUrl
+    legacy: dummyUrl
+
+account.console:
+  domain: app.dev.int.zipwhip.com
+
+integration:
+  domain: integrationqa.zipwhip.com  
+  cdn: https://int-statics-qa
+  gaId: 'UA-93943181-1'
+
+
+spring:
+  kafka:
+    bootstrap-servers: localhost:1234
+    hosts: localhost:1234
+    clientTopicReplicas: 2
+    autoCommit: false
+
+kafka:
+  hosts: localhost:1234
+  clientTopicReplicas: 2
+  autoCommit: false

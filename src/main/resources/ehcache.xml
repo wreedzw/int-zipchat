@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://www.ehcache.org/ehcache.xsd"
+         updateCheck="true"
+         monitoring="autodetect"
+         dynamicConfig="true">
+
+    <cache name="orgcustomer_owns_landline"
+           maxElementsInMemory="10000"
+           eternal="false"
+           overflowToDisk="false"
+           timeToLiveSeconds="600"
+           timeToIdleSeconds="0"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+    </cache>
+    <cache name="orgcustomer_landlines"
+           maxElementsInMemory="10000"
+           eternal="false"
+           overflowToDisk="false"
+           timeToLiveSeconds="600"
+           timeToIdleSeconds="0"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+    </cache>
+    <cache name="org_landlines"
+           maxElementsInMemory="10000"
+           eternal="false"
+           overflowToDisk="false"
+           timeToLiveSeconds="3600"
+           timeToIdleSeconds="0"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+    </cache>
+    
+     <cache name="environment_detector"
+           maxElementsInMemory="10000"
+           eternal="false"
+           overflowToDisk="false"
+           timeToLiveSeconds="3600"
+           timeToIdleSeconds="0"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+    </cache>
+    <cache name="message_origin_detector"
+           maxElementsInMemory="10000"
+           eternal="false"
+           overflowToDisk="false"
+           timeToLiveSeconds="15"
+           timeToIdleSeconds="15"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+    </cache>
+
+</ehcache>

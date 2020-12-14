@@ -1,0 +1,32 @@
+
+int-manager-service.ribbon.listOfServers: localhost:8082
+text-service..ribbon.listOfServers: integrationqa.zipwhip.com/mock/textback.json
+
+kafka:
+  hosts: localhost:9092
+  autoCommit: false
+
+zipwhip.api.url:
+  legacy: http://api-int.zipwhip.com
+  bs: https://api-l-us.zipwhip.com
+
+zipwhip.toolkit.url:
+  legacy: http://toolkit.zipwhip.com
+  bs: http://toolkit-bs.zipwhip.com
+
+account.console:
+  domain: integrationqa.zipwhip.com
+  url: https://integrationqa.zipwhip.com/int-demo/home/
+  urlBs: https://integrationqa.zipwhip.com/int-demo/home/
+
+integration:
+  domain: integrationqa.zipwhip.com
+  cdn: https://int-statics-qa
+  gaId: 'UA-93943181-1'
+
+server.port: 8910
+
+spring.data.mongodb:
+  host: localhost
+  port: 27017
+  database: integrations
