@@ -15,15 +15,15 @@
   <parent>
     <groupId>com.zipwhip.integration</groupId>
     <artifactId>int-service-starter-parent</artifactId>
-    <version>0.0.10-SNAPSHOT</version>
+    <version>0.0.18-SNAPSHOT</version>
     <relativePath/>
   </parent>
 
   <properties>
 
     <!-- jacoco config -->
-    <jacoco.line.class.ratio.minimum>0.08</jacoco.line.class.ratio.minimum>
-    <jacoco.line.project.ratio.minimum>0.08</jacoco.line.project.ratio.minimum>
+    <jacoco.line.class.ratio.minimum>0.00</jacoco.line.class.ratio.minimum>
+    <jacoco.line.project.ratio.minimum>0.00</jacoco.line.project.ratio.minimum>
   </properties>
 
   <dependencies>

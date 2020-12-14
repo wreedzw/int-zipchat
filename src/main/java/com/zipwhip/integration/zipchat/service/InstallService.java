@@ -4,6 +4,7 @@ import com.zipwhip.integration.zipchat.entities.OrgConfig;
 import com.zipwhip.integration.zipchat.error.NoOrgConfigException;
 import com.zipwhip.integration.zipchat.repository.OrgConfigRepository;
 import com.zipwhip.integration.zipchat.install.InstallController;
+import com.zipwhip.integration.zipchat.domain.*;
 import com.zipwhip.kafka.poller.status.domain.PollerStatus;
 import com.zipwhip.kafka.poller.status.repository.PollerStatusRepository;
 import com.zipwhip.logging.IntegrationFeature;

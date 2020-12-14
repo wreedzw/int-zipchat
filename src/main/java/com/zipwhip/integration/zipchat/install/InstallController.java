@@ -2,8 +2,10 @@ package com.zipwhip.integration.zipchat.install;
 
 import com.zipwhip.controller.utils.ControllerUtils;
 import com.zipwhip.integration.zipchat.entities.OrgConfig;
+import com.zipwhip.integration.zipchat.error.NoOrgConfigException;
 import com.zipwhip.integration.zipchat.repository.OrgConfigRepository;
 import com.zipwhip.integration.zipchat.service.InstallService;
+import com.zipwhip.integration.zipchat.domain.*;
 import com.zipwhip.legacy.config.AccountConsoleConfig;
 import com.zipwhip.logging.CompletionCode;
 import com.zipwhip.logging.IntegrationFeature;
@@ -170,46 +172,6 @@ public class InstallController {
       return "redirect:/secure/install/settings/orgId/" + orgCustomerId + "?error=" + e
         .getMessage();
     } finally {
-      MDCUtil.endFeature(success ? CompletionCode.SUCCESS : CompletionCode.FAILURE);
-      MDC.clear();
-    }
-  }
-
-  /**
-   * Test the authentication stored for the org ID
-   *
-   * @param orgCustomerId The org to check the auth for
-   */
-  @GetMapping("/test_auth/orgId/{orgCustomerId}")
-  @ResponseBody
-  public void testAuth(@PathVariable("orgCustomerId") Long orgCustomerId) {
-    boolean success = false;
-    try {
-      // Set up the MDC fields
-      MDC.put(MDCFields.INT_ID, integrationId);
-      MDC.put(MDCFields.ORG_CUSTOMER_ID, orgCustomerId);
-      MDC.put(MDCFields.FEATURE_STEP, "auth");
-      MDCUtil.startFeature(IntegrationFeature.TEST);
-
-      // Get the config
-      final OrgConfig orgConfig = orgConfigRepository.findById(orgCustomerId).orElse(null);
-
-      // Test the config
-      try {
-        success = apiClient.verifyAccess(orgConfig);
-        if (success) {
-          log.info("Successfully validated access");
-        } else {
-          log.warn("Unsuccessfully validated access");
-          throw new RuntimeException();
-        }
-      } catch (Exception e) {
-        log.error("Failed testing access: {}", e.getMessage(), e);
-        throw new RuntimeException();
-      }
-
-    } finally {
-      // Mark the feature as complete
       MDCUtil.endFeature(success ? CompletionCode.SUCCESS : CompletionCode.FAILURE);
       MDC.clear();
     }

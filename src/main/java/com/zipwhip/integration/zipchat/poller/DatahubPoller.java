@@ -141,91 +141,6 @@ public class DatahubPoller extends AbstractPoller<DatahubPoller.ZipChatExecution
     Long orgId = context.getOrgConfig().getOrgCustomerId();
     MDC.put(MDCFields.ORG_CUSTOMER_ID, orgId);
 
-    //Only perform processing if sync is enabled
-    if (syncEnabled) {
-      try {
-        InboundBase<?> base = record.value();
-
-        //Process as message
-        if (base instanceof InboundMessage) {
-
-          //Extract critical logging info
-          MDCUtil.startFeature(IntegrationFeature.MESSAGE_TO_EXTERNAL);
-          InboundMessage message = (InboundMessage) base;
-          Long messageId = message.getPayload().getId();
-          if (messageProcessingRecorder.startProcessing(MESSAGE, messageId, appName)) {
-            MDC.put(MDCFields.MSG_ID, messageId);
-            try {
-              MDC.put(MDCFields.LANDLINE, MessageUtils.getLandline(message));
-              MDC.put(MDCFields.MOBILE, MessageUtils.getPhone(message));
-            } catch (NullPointerException e) {
-              log
-                .warn("Failed to setup MDC fields for message: {}; {}", message, e.getMessage(), e);
-            }
-
-            //Log message
-            log.info("Processing message ID {}. Org ID {}", messageId, orgId);
-
-            try {
-
-              //Process message
-              syncService.processMessage(message, orgConfig);
-
-              log.info("Processing message ID {}. Org ID {}. Done", messageId, orgId);
-              success = true;
-
-            } catch (Exception e) {
-              log.error("Failed to process message {}; {}", message, e.getMessage(), e);
-            } finally {
-              messageProcessingRecorder
-                .completeProcessing(success ? RECORD_PROCESSED : FAILED_TO_PROCESS, MESSAGE,
-                  messageId, appName);
-            }
-          }
-
-        } else if (base instanceof InboundContact && ("save".equals(base.getAction()) || "new"
-          .equals(base.getAction()))) {
-
-          //Process as message
-          if (contactSyncEnabled) {
-
-            //Extract critical logging info
-            MDCUtil.startFeature(IntegrationFeature.CONTACT_TO_EXTERNAL);
-            InboundContact contact = (InboundContact) base;
-            Long contactId = contact.getPayload().getId();
-
-            //Log contact
-            log.info("Processing contact ID {}. Org ID {}", contactId, orgId);
-
-            try {
-              messageProcessingRecorder.startProcessing(CONTACT, contactId, appName);
-
-              //Process contact
-              syncService.processContact(contact, orgConfig);
-
-              log.info("Processing contact ID {}. Org ID {}. Done", contactId, orgId);
-              success = true;
-
-            } catch (Exception e) {
-              log.error("Failed to process contact {}; {}", contact, e.getMessage(), e);
-            } finally {
-              messageProcessingRecorder
-                .completeProcessing(success ? RECORD_PROCESSED : FAILED_TO_PROCESS, CONTACT,
-                  contactId, appName);
-            }
-
-          } else {
-            log.debug("Contact Sync feature disabled at service level, skipping");
-          }
-
-        }
-      } finally {
-        MDCUtil.endFeature(success ? CompletionCode.SUCCESS : CompletionCode.FAILURE);
-        MDC.clear();
-      }
-    } else {
-      log.warn("Sync feature disabled at service level, skipping");
-    }
   }
 
   /**
@@ -238,17 +153,6 @@ public class DatahubPoller extends AbstractPoller<DatahubPoller.ZipChatExecution
   protected ZipChatExecutionContext createContext(SubscriptionRecord record) {
     return new ZipChatExecutionContext(
       orgConfigRepository.findById(record.getCustomerId()).orElse(null));
-  }
-
-  /**
-   * Updates the in memory loaded orgConfig for the given execution context
-   *
-   * @param context The context for the poller scanning kafka
-   * @param record  The install record to update the config for
-   */
-  @Override
-  protected void refreshSubscription(ZipChatExecutionContext context, SubscriptionRecord record) {
-    context.orgConfig = orgConfigRepository.findById(record.getCustomerId()).orElse(null);
   }
 
   /**

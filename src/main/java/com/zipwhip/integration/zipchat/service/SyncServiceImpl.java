@@ -43,49 +43,6 @@ public class SyncServiceImpl implements SyncService {
    */
   @Override
   public void processMessage(InboundMessage message, OrgConfig orgConfig) {
-    if (!orgConfig.getContactSyncFromCrmEnabled() && !orgConfig.getMessageArchiveToCrmEnabled()) {
-      log.info("Contact Sync and Message Archive feature is disabled by user for org: {}",
-        orgConfig.getOrgCustomerId());
-      return;
-    }
-
-    final String mobile = MessageUtils.getPhone(message);
-    final String landlineE164 = MessageUtils.formatE164(MessageUtils.getLandline(message));
-    log.info("Find claim-contacts by phone: {}", mobile);
-    List<ZipwhipClaimContact> claimContacts = accService.findByPhone(mobile, orgConfig);
-
-    // if there are no claim-contacts associated with this number, then there is nothing to archive or sync
-    if (claimContacts == null || claimContacts.isEmpty()) {
-      log.info("No matching clients found for mobile: {}", mobile);
-      return;
-    }
-
-    final String body = message.getPayload().getBody();
-    log.info("Sync msg to {} potential targets for landline: {}, {}", claimContacts.size(),
-      landlineE164, body);
-
-    final SyncTargets syncTargets = extractSyncTargets(claimContacts, landlineE164,
-      MessageUtils.formatE164(mobile));
-
-    // Sync contacts first since it's an update and impact of double syncing is less
-    log.info("Updating based on {} contact sync candidates with number {} matching landline {}",
-      syncTargets.getContactSyncCandidates().size(), mobile,
-      landlineE164);
-    // If there are 1 or more contacts whose adjuster’s number matches the Zipwhip’s landline number on which the message was sent or received,
-    // we update Zipwhip’s contact details with the record in the result set with the most recent ClaimLossDate.
-    if (orgConfig.getContactSyncFromCrmEnabled()) {
-      syncContactToZipwhip(message, syncTargets.getContactSyncCandidates(), orgConfig);
-    } else {
-      log.info("Contact Sync feature is disabled by user");
-    }
-
-    if (orgConfig.getMessageArchiveToCrmEnabled()) {
-      // Sync messages after contact sync is complete
-      composeConversations(message, syncTargets.getMessageSyncTargets(), orgConfig, mobile,
-        landlineE164);
-    } else {
-      log.info("Message Archive feature is disabled by user");
-    }
   }
 
   /**
