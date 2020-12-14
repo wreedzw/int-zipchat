@@ -21,24 +21,8 @@ public class Settings {
     private String orgCustomerId;
 
     /**
-     * Info about individual member of the Channel
+     * List of Channel members
      */
-    private class Member {
-        private String mobileNumber;
+    private ArrayList<Member> members;
 
-        /**
-         * User selected this name when they joined the channel
-         */
-        private String name;
-
-        /**
-         * This member Opted Out or was banned, do not send messages
-         */
-        private boolean doNotSend;
-    }
-
-    /**
-     * List of members of the Channel
-     */
-    private ArrayList<Member> Members;
 }

@@ -1,23 +1,11 @@
 package com.zipwhip.integration.zipchat.poller;
 
-import static com.zipwhip.service.MessageProcessingRecorder.ProcessingState.FAILED_TO_PROCESS;
-import static com.zipwhip.service.MessageProcessingRecorder.ProcessingState.RECORD_PROCESSED;
-import static com.zipwhip.service.MessageProcessingRecorder.RecordType.CONTACT;
-import static com.zipwhip.service.MessageProcessingRecorder.RecordType.MESSAGE;
-
-import com.google.common.util.concurrent.RateLimiter;
 import com.zipwhip.integration.zipchat.entities.OrgConfig;
 import com.zipwhip.integration.zipchat.repository.OrgConfigRepository;
 import com.zipwhip.integration.zipchat.service.SyncService;
-import com.zipwhip.kafka.poller.AbstractPoller;
-import com.zipwhip.logging.CompletionCode;
-import com.zipwhip.logging.IntegrationFeature;
 import com.zipwhip.logging.MDC;
 import com.zipwhip.logging.MDCFields;
 import com.zipwhip.logging.MDCUtil;
-import com.zipwhip.message.domain.InboundBase;
-import com.zipwhip.message.domain.InboundContact;
-import com.zipwhip.message.domain.InboundMessage;
 import com.zipwhip.message.utils.MessageUtils;
 import com.zipwhip.service.MessageProcessingRecorder;
 import com.zipwhip.subscription.domain.SubscriptionInfo.SubscriptionRecord;
