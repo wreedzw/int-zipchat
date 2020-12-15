@@ -13,7 +13,7 @@
     <groupId>com.zipwhip.integration</groupId>
 
     <artifactId>int-service-starter-parent</artifactId>
-    <version>0.0.18-SNAPSHOT</version>
+    <version>0.0.22-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -21,6 +21,9 @@
     <!-- jacoco config -->
     <jacoco.line.class.ratio.minimum>0.00</jacoco.line.class.ratio.minimum>
     <jacoco.line.project.ratio.minimum>0.00</jacoco.line.project.ratio.minimum>
+
+    <!-- Zipwhip Libraries -->
+    <int-poller.version>1.3.7-SNAPSHOT</int-poller.version>
   </properties>
 
   <dependencies>

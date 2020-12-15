@@ -1,7 +1,5 @@
 package com.zipwhip.integration.zipchat;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
@@ -29,7 +27,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @EnableKafka
 @EmbeddedKafka(partitions = 1, brokerProperties = {"listeners=PLAINTEXT://127.0.0.1:1234",
   "port=1234", "auto.create.topics.enable=false"})
-@ActiveProfiles("junit")
+@ActiveProfiles("test")
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 public class ZipChatAppTest {
 

@@ -200,9 +200,6 @@ public class DatahubPoller extends AbstractPoller<DatahubPoller.ZipChatExecution
             try {
               messageProcessingRecorder.startProcessing(CONTACT, contactId, appName);
 
-              //Process contact
-              syncService.processContact(contact, orgConfig);
-
               log.info("Processing contact ID {}. Org ID {}. Done", contactId, orgId);
               success = true;
 

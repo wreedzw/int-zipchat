@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Value
 @Document("subscription")
-@CompoundIndex(def = "{ 'channelId' : 1, 'subscriberId: 1' }", unique = true)
+@CompoundIndex(def = "{ 'channelId' : 1, 'subscriberId': 1 }", unique = true)
 public class Subscription {
   @Indexed
   @NonNull
