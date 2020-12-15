@@ -3,7 +3,6 @@ package com.zipwhip.integration.zipchat.controller;
 import com.zipwhip.integration.zipchat.entities.OrgConfig;
 import com.zipwhip.integration.zipchat.poller.DatahubPoller;
 import com.zipwhip.integration.zipchat.repository.OrgConfigRepository;
-import com.zipwhip.integration.zipchat.service.SyncServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +36,6 @@ public class ManagementController {
    * A poller to use for forcing processing of a message
    */
   private final DatahubPoller poller;
-
-  /**
-   * Sync service which can be used to filter sync targets
-   */
-  private final SyncServiceImpl syncService;
 
   /**
    * The ID for the integration
