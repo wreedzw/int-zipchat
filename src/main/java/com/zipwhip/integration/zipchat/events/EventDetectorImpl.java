@@ -3,7 +3,9 @@ package com.zipwhip.integration.zipchat.events;
 import com.zipwhip.integration.zipchat.domain.SubscriberEvent;
 import com.zipwhip.message.domain.InboundMessage;
 import java.util.Optional;
+import org.springframework.stereotype.Component;
 
+@Component
 public class EventDetectorImpl implements EventDetector {
 
   @Override

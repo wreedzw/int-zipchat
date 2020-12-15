@@ -2,15 +2,16 @@ package com.zipwhip.integration.zipchat.publish;
 
 import com.zipwhip.integration.zipchat.domain.Subscriber;
 import com.zipwhip.integration.zipchat.domain.SubscriberEvent;
-import com.zipwhip.integration.zipchat.events.EventType;
 import com.zipwhip.integration.zipchat.repository.SubscriberRepository;
 import com.zipwhip.message.domain.InboundMessage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 class DefaultMessagePublisher implements MessagePublisher {
 
-  private SubscriberRepository subscriberRepository;
+  private final SubscriberRepository subscriberRepository;
 
   @Override
   public void publishMessage(Iterable<Subscriber> subscribers, InboundMessage message) {
