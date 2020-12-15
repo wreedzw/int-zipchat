@@ -1,7 +1,6 @@
 package com.zipwhip.integration.zipchat.service;
 
 import com.zipwhip.integration.zipchat.entities.OrgConfig;
-import com.zipwhip.message.domain.InboundContact;
 import com.zipwhip.message.domain.InboundMessage;
 
 /**
