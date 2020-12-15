@@ -18,7 +18,7 @@ spring:
 ---
 
 spring:
-  profiles: junit, mongo, web, kafka
+  profiles: junit, mongo
   cloud:
     bus:
       enabled: false

@@ -7,9 +7,6 @@ import com.zipwhip.integration.zipchat.service.SyncService;
 import com.zipwhip.kafka.poller.AbstractPoller;
 import com.zipwhip.logging.*;
 import com.zipwhip.message.domain.InboundBase;
-import com.zipwhip.message.domain.InboundContact;
-import com.zipwhip.message.domain.InboundMessage;
-import com.zipwhip.message.utils.MessageUtils;
 import com.zipwhip.service.MessageProcessingRecorder;
 import com.zipwhip.subscription.domain.SubscriptionInfo.SubscriptionRecord;
 import lombok.AllArgsConstructor;
@@ -23,16 +20,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import static com.zipwhip.service.MessageProcessingRecorder.ProcessingState.FAILED_TO_PROCESS;
-import static com.zipwhip.service.MessageProcessingRecorder.ProcessingState.RECORD_PROCESSED;
-import static com.zipwhip.service.MessageProcessingRecorder.RecordType.CONTACT;
-import static com.zipwhip.service.MessageProcessingRecorder.RecordType.MESSAGE;
-
 /**
  * Poller which will poll Kafka for records (messages, contacts) to be synced or otherwise
  * processed
  */
-@Profile("kafka")
 @Component
 @Data
 @Slf4j
