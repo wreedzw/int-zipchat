@@ -1,12 +1,24 @@
 package com.zipwhip.integration.zipchat.poller;
 
+import static com.zipwhip.service.MessageProcessingRecorder.ProcessingState.FAILED_TO_PROCESS;
+import static com.zipwhip.service.MessageProcessingRecorder.ProcessingState.RECORD_PROCESSED;
+import static com.zipwhip.service.MessageProcessingRecorder.RecordType.CONTACT;
+import static com.zipwhip.service.MessageProcessingRecorder.RecordType.MESSAGE;
+
 import com.google.common.util.concurrent.RateLimiter;
 import com.zipwhip.integration.zipchat.entities.OrgConfig;
 import com.zipwhip.integration.zipchat.repository.OrgConfigRepository;
 import com.zipwhip.integration.zipchat.service.SyncService;
 import com.zipwhip.kafka.poller.AbstractPoller;
-import com.zipwhip.logging.*;
+import com.zipwhip.logging.CompletionCode;
+import com.zipwhip.logging.IntegrationFeature;
+import com.zipwhip.logging.MDC;
+import com.zipwhip.logging.MDCFields;
+import com.zipwhip.logging.MDCUtil;
 import com.zipwhip.message.domain.InboundBase;
+import com.zipwhip.message.domain.InboundContact;
+import com.zipwhip.message.domain.InboundMessage;
+import com.zipwhip.message.utils.MessageUtils;
 import com.zipwhip.service.MessageProcessingRecorder;
 import com.zipwhip.subscription.domain.SubscriptionInfo.SubscriptionRecord;
 import lombok.AllArgsConstructor;
@@ -17,7 +29,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
@@ -48,9 +59,15 @@ public class DatahubPoller extends AbstractPoller<DatahubPoller.ZipChatExecution
   private MessageProcessingRecorder messageProcessingRecorder;
 
   /**
+   * Flag indicating if any sync is enabled on this service
+   */
+  @Value("${features.sync.enabled:true}")
+  private boolean syncEnabled;
+
+  /**
    * The name of the application
    */
-  @Value("${spring.application.name:Guidewire}")
+  @Value("${spring.application.name:ZipChat}")
   private String appName;
 
   /**
@@ -63,9 +80,24 @@ public class DatahubPoller extends AbstractPoller<DatahubPoller.ZipChatExecution
    */
   @Override
   protected void consume(ConsumerRecords<String, InboundBase<?>> records,
-                         ZipChatExecutionContext context,
-                         RateLimiter rateLimited) {
+    ZipChatExecutionContext context,
+    RateLimiter rateLimited) {
 
+    try {
+      MDC.put(MDCFields.ORG_CUSTOMER_ID, context.getOrgConfig().getOrgCustomerId());
+      //If sync is enabled, process the message
+      if (syncEnabled) {
+        records.forEach(x -> processRecord(x, context));
+        context.commit();
+      } else {
+        log.warn("Sync feature disabled at service level, skipping");
+      }
+    } catch (Exception e) {
+      log.error("Unhandled error", e);
+      throw e;
+    } finally {
+      MDC.clear();
+    }
 
   }
 
@@ -77,6 +109,15 @@ public class DatahubPoller extends AbstractPoller<DatahubPoller.ZipChatExecution
    * @param orgCustomerId The orgCustomerId processing the message
    */
   public void forceProcessRecord(InboundBase<?> toProcess, Long orgCustomerId) {
+    OrgConfig orgConfig = orgConfigRepository.findById(orgCustomerId).orElse(null);
+    if (orgConfig != null) {
+      ZipChatExecutionContext context = new ZipChatExecutionContext(orgConfig);
+      ConsumerRecord<String, InboundBase<?>> record = new ConsumerRecord<>("forced", 0, 0, null,
+        toProcess);
+      processRecord(record, context);
+    } else {
+      log.warn("No org config found for {}; cannot process message", orgCustomerId);
+    }
 
   }
 
@@ -87,8 +128,67 @@ public class DatahubPoller extends AbstractPoller<DatahubPoller.ZipChatExecution
    * @param context The context of the executing thread
    */
   private void processRecord(ConsumerRecord<String, InboundBase<?>> record,
-                             ZipChatExecutionContext context) {
+    ZipChatExecutionContext context) {
 
+    boolean success = false;
+    OrgConfig orgConfig = context.getOrgConfig();
+    Long orgId = context.getOrgConfig().getOrgCustomerId();
+    MDC.put(MDCFields.ORG_CUSTOMER_ID, orgId);
+
+    //Only perform processing if sync is enabled
+    if (syncEnabled) {
+      try {
+        InboundBase<?> base = record.value();
+
+        //Process as message
+        if (base instanceof InboundMessage) {
+
+          //Extract critical logging info
+          MDCUtil.startFeature(IntegrationFeature.MESSAGE_TO_EXTERNAL);
+          InboundMessage message = (InboundMessage) base;
+          Long messageId = message.getPayload().getId();
+          if (messageProcessingRecorder.startProcessing(MESSAGE, messageId, appName)) {
+            MDC.put(MDCFields.MSG_ID, messageId);
+            try {
+              MDC.put(MDCFields.LANDLINE, MessageUtils.getLandline(message));
+              MDC.put(MDCFields.MOBILE, MessageUtils.getPhone(message));
+            } catch (NullPointerException e) {
+              log
+                .warn("Failed to setup MDC fields for message: {}; {}", message, e.getMessage(), e);
+            }
+
+            //Log message
+            log.info("Processing message ID {}. Org ID {}", messageId, orgId);
+
+            try {
+
+              //Process message
+              syncService.processMessage(message, orgConfig);
+
+              log.info("Processing message ID {}. Org ID {}. Done", messageId, orgId);
+              success = true;
+
+            } catch (Exception e) {
+              log.error("Failed to process message {}; {}", message, e.getMessage(), e);
+            } finally {
+              messageProcessingRecorder
+                .completeProcessing(success ? RECORD_PROCESSED : FAILED_TO_PROCESS, MESSAGE,
+                  messageId, appName);
+            }
+          }
+
+        } else if (base instanceof InboundContact && ("save".equals(base.getAction()) || "new"
+          .equals(base.getAction()))) {
+
+
+        }
+      } finally {
+        MDCUtil.endFeature(success ? CompletionCode.SUCCESS : CompletionCode.FAILURE);
+        MDC.clear();
+      }
+    } else {
+      log.warn("Sync feature disabled at service level, skipping");
+    }
   }
 
   /**
@@ -100,7 +200,7 @@ public class DatahubPoller extends AbstractPoller<DatahubPoller.ZipChatExecution
   @Override
   protected ZipChatExecutionContext createContext(SubscriptionRecord record) {
     return new ZipChatExecutionContext(
-            orgConfigRepository.findById(record.getCustomerId()).orElse(null));
+      orgConfigRepository.findById(record.getCustomerId()).orElse(null));
   }
 
   /**
@@ -115,7 +215,7 @@ public class DatahubPoller extends AbstractPoller<DatahubPoller.ZipChatExecution
   }
 
   /**
-   * A Guidewire specific execution context which can be used to store state for a given poller
+   * A ZipChat specific execution context which can be used to store state for a given poller
    * thread
    */
   @EqualsAndHashCode(callSuper = false)

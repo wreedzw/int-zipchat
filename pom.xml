@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.zipwhip.integration</groupId>
   <artifactId>int-zipchat-service</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
@@ -16,7 +13,6 @@
     <groupId>com.zipwhip.integration</groupId>
     <artifactId>int-service-starter-parent</artifactId>
     <version>0.0.22-SNAPSHOT</version>
-    <relativePath/>
   </parent>
 
   <properties>
@@ -24,6 +20,9 @@
     <!-- jacoco config -->
     <jacoco.line.class.ratio.minimum>0.00</jacoco.line.class.ratio.minimum>
     <jacoco.line.project.ratio.minimum>0.00</jacoco.line.project.ratio.minimum>
+
+    <!-- Zipwhip Libraries -->
+    <int-poller.version>1.3.7-SNAPSHOT</int-poller.version>
   </properties>
 
   <dependencies>
@@ -51,22 +50,17 @@
       <artifactId>int-manager-shared</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.zipwhip.integration</groupId>
-      <artifactId>int-bi-shared</artifactId>
-      <version>${int-bi.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.zipwhip.integration</groupId>
-      <artifactId>int-text-from-external-lib</artifactId>
-      <version>${int-text-from-external.version}</version>
-    </dependency>
-    <dependency>
       <groupId>com.zipwhip</groupId>
       <artifactId>zipwhip-actuator-starter</artifactId>
       <version>${zipwhip-starter-actuator.version}</version>
     </dependency>
 
     <!-- Test dependencies -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.springframework.ws</groupId>
       <artifactId>spring-ws-test</artifactId>
