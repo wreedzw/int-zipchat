@@ -11,7 +11,6 @@
 
   <parent>
     <groupId>com.zipwhip.integration</groupId>
-
     <artifactId>int-service-starter-parent</artifactId>
     <version>0.0.22-SNAPSHOT</version>
   </parent>
@@ -51,22 +50,17 @@
       <artifactId>int-manager-shared</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.zipwhip.integration</groupId>
-      <artifactId>int-bi-shared</artifactId>
-      <version>${int-bi.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.zipwhip.integration</groupId>
-      <artifactId>int-text-from-external-lib</artifactId>
-      <version>${int-text-from-external.version}</version>
-    </dependency>
-    <dependency>
       <groupId>com.zipwhip</groupId>
       <artifactId>zipwhip-actuator-starter</artifactId>
       <version>${zipwhip-starter-actuator.version}</version>
     </dependency>
 
     <!-- Test dependencies -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.springframework.ws</groupId>
       <artifactId>spring-ws-test</artifactId>

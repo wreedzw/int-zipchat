@@ -65,12 +65,6 @@ public class DatahubPoller extends AbstractPoller<DatahubPoller.ZipChatExecution
   private boolean syncEnabled;
 
   /**
-   * Flag indicating if this service is configured for processing of contacts
-   */
-  @Value("${features.sync.contact.enabled:false}")
-  private boolean contactSyncEnabled;
-
-  /**
    * The name of the application
    */
   @Value("${spring.application.name:ZipChat}")
@@ -186,34 +180,6 @@ public class DatahubPoller extends AbstractPoller<DatahubPoller.ZipChatExecution
         } else if (base instanceof InboundContact && ("save".equals(base.getAction()) || "new"
           .equals(base.getAction()))) {
 
-          //Process as message
-          if (contactSyncEnabled) {
-
-            //Extract critical logging info
-            MDCUtil.startFeature(IntegrationFeature.CONTACT_TO_EXTERNAL);
-            InboundContact contact = (InboundContact) base;
-            Long contactId = contact.getPayload().getId();
-
-            //Log contact
-            log.info("Processing contact ID {}. Org ID {}", contactId, orgId);
-
-            try {
-              messageProcessingRecorder.startProcessing(CONTACT, contactId, appName);
-
-              log.info("Processing contact ID {}. Org ID {}. Done", contactId, orgId);
-              success = true;
-
-            } catch (Exception e) {
-              log.error("Failed to process contact {}; {}", contact, e.getMessage(), e);
-            } finally {
-              messageProcessingRecorder
-                .completeProcessing(success ? RECORD_PROCESSED : FAILED_TO_PROCESS, CONTACT,
-                  contactId, appName);
-            }
-
-          } else {
-            log.debug("Contact Sync feature disabled at service level, skipping");
-          }
 
         }
       } finally {
