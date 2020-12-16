@@ -35,7 +35,7 @@ public class EventDetectorImpl implements EventDetector {
 
       EventType evtType = null;
 
-      for (EventType e: EventType.values()) {
+      for (EventType e : EventType.values()) {
         if (e.getKeyword().equalsIgnoreCase(cmd)) {
           evtType = e;
           break;
@@ -45,20 +45,36 @@ public class EventDetectorImpl implements EventDetector {
       if (evtType == null) return Optional.empty();
 
       String src = message.getPayload().getSourceAddress();
-      Subscriber s = subscriberRepository.findById(src).orElse(null);
-      if (s == null) {
-        log.warn("Subscriber with phone number {} not found", src);
-        return Optional.empty();
+      Subscriber s = null;
+      Channel c = null;
+      String name = null;
+
+      switch (evtType) {
+
+        case ADDUSER:
+        case RENAME:
+          name = m.group(2);
+          break;
+
+        case CREATE:
+        case DELETE:
+        case JOIN:
+        case LEAVE:
+          s = subscriberRepository.findById(src).orElse(null);
+          if (s == null) {
+            log.warn("Subscriber with phone number {} not found", src);
+            return Optional.empty();
+          }
+          String channelName = m.group(2);
+          c = channelRepository.findChannelByName(channelName);
+          if (c == null) {
+            log.warn("Specified channel {} not found", channelName);
+            return Optional.empty();
+          }
+          break;
       }
 
-      String channelName = m.group(2);
-      Channel c = channelRepository.findChannelByName(channelName);
-      if (c == null) {
-        log.warn("Specified channel {} not found", channelName);
-        return Optional.empty();
-      }
-
-      subEvent = new SubscriberEvent(evtType, s, c);
+      subEvent = new SubscriberEvent(evtType, s, c, name);
     }
     return Optional.ofNullable(subEvent);
   }

@@ -28,6 +28,12 @@ public class MessageProcessor {
       SubscriberEvent se = detectedEvent.get();
       switch (se.getEventType()) {
 
+        case ADDUSER:
+          // TODO determine if only the landline itself (or anyone) should be able to add users
+          String displayName = se.getName();
+          subscriberManager.addSubscriber(sub);
+          break;
+
         case JOIN:
           subscriberManager.updateChannelSubscription(se.getChannel(), se.getSubscriber());
           publisher.publishCommandMessage(se, message);

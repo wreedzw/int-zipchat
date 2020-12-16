@@ -10,4 +10,6 @@ public class SubscriberEvent {
   Subscriber subscriber;
 
   Channel channel;
+
+  String name;
 }
