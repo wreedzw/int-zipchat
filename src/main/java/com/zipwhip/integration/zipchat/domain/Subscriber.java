@@ -4,6 +4,8 @@ import lombok.NonNull;
 import lombok.Value;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * The class contains information about a Channel member
  */
@@ -12,6 +14,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Subscriber {
 
   String id;
+
+  String channelId;
 
   /**
    * User phone number
