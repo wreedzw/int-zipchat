@@ -50,10 +50,10 @@ public class MessageProcessor {
       }
     } else {
       try {
-        Subscriber sub = subscriberManager.getSubscriber(message.getPayload().getSourceAddress());
-        publisher.publishMessage(subscriberManager.getChannelSubscribers(sub.getChannelId()), message);
+        publisher.publishMessage(message);
       } catch (IllegalStateException e) {
-        // swallow exception from subscriber not found, must subscribe first
+        // TODO - put the whole body of this method into try and not just this call, and
+        //  add "system" response message informing sender the message was rejected
       }
     }
   }

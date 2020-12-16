@@ -1,12 +1,21 @@
 package com.zipwhip.integration.zipchat.publish;
 
-import com.zipwhip.integration.zipchat.domain.Subscriber;
 import com.zipwhip.integration.zipchat.domain.SubscriberEvent;
 import com.zipwhip.message.domain.InboundMessage;
 
 public interface MessagePublisher {
 
-  void publishMessage(Iterable<Subscriber> subscribers, InboundMessage message);
+  /**
+   * Publish regular message to all subscribers of the channel the sender is member of,
+   * except for sender themselves
+   * @param message
+   */
+  void publishMessage(InboundMessage message);
 
+  /**
+   * Publish subscribe event to all members of affected channel
+   * @param subEvent
+   * @param message
+   */
   void publishCommandMessage(SubscriberEvent subEvent, InboundMessage message);
 }

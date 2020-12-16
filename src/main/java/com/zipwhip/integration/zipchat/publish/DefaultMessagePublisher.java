@@ -8,7 +8,7 @@ import com.zipwhip.integration.zipchat.domain.SubscriberEvent;
 import com.zipwhip.integration.zipchat.repository.SubscriberRepository;
 import com.zipwhip.logging.IntegrationFeature;
 import com.zipwhip.message.domain.InboundMessage;
-import java.util.stream.StreamSupport;
+import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,32 +23,36 @@ class DefaultMessagePublisher implements MessagePublisher {
   private TextServiceWrapper textService;
 
   @Override
-  public void publishMessage(Iterable<Subscriber> subscribers, InboundMessage message) {
+  public void publishMessage(InboundMessage message) {
 
-    StreamSupport.stream(subscribers.spliterator(), false)
-        .filter(s -> !s.getMobileNumber().equals(message.getPayload().getSourceAddress()))
+    Subscriber sender = subscriberRepository.findById(message.getPayload().getSourceAddress())
+        .orElseThrow(IllegalStateException::new);
+    subscriberRepository.findByChannelId(sender.getChannelId()).stream()
+        .filter(excludeSelf(message.getPayload().getSourceAddress()))
         .forEach(s -> sendMessage(s.getMobileNumber(), message));
   }
 
-  /**
-   * Return modified event text for publishing to subscribers
-   * @param subEvent
-   */
+  @Override
   public void publishCommandMessage(SubscriberEvent subEvent, InboundMessage message) {
 
     String eventPayload = String.join(" ",
         subEvent.getSubscriber().getDisplayName(),
-          subEvent.getEventType().getDisplay(),
-          "channel",
-          subEvent.getChannel().getName());
+        subEvent.getEventType().getDisplay(),
+        "channel",
+        subEvent.getChannel().getName());
 
     subscriberRepository.findByChannelId(subEvent.getChannel().getId()).stream()
-        .filter(s -> !s.getMobileNumber().equals(subEvent.getSubscriber().getMobileNumber()))
+        .filter(excludeSelf(subEvent.getSubscriber().getMobileNumber()))
         .forEach(s -> sendMessage(s.getMobileNumber(), message, eventPayload));
   }
 
+  private Predicate<Subscriber> excludeSelf(String myNumber) {
+    return s -> !s.getMobileNumber().equals(myNumber);
+  }
+
   private String getMessagePrefix(InboundMessage message) {
-    Subscriber subscriber = subscriberRepository.findById(message.getPayload().getSourceAddress()).orElseThrow(IllegalStateException::new);
+    Subscriber subscriber = subscriberRepository.findById(message.getPayload().getSourceAddress())
+        .orElseThrow(IllegalStateException::new);
     return subscriber.getDisplayName() + ":";
   }
 
@@ -64,10 +68,12 @@ class DefaultMessagePublisher implements MessagePublisher {
         .orgCustomerId(msg.getOrgCustomerId())
         .build();
 
-    String payload = overrideText != null ? overrideText : getMessagePrefix(msg) + msg.getPayload().getBody();
+    String payload =
+        overrideText != null ? overrideText : getMessagePrefix(msg) + msg.getPayload().getBody();
 
     // todo need response?
-    TextService.Response response = textService.send(msg.getPayload().getDestAddress(), destinationAddress,
-        payload, origin);
+    TextService.Response response = textService
+        .send(msg.getPayload().getDestAddress(), destinationAddress,
+            payload, origin);
   }
 }
