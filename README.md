@@ -35,6 +35,8 @@ and Subscriber management (delete Subscribers, ban Subscribers preventing them f
 * HISTORY sends Channel messages from prior to the Subscriber joining.
 * INVITE allows a Subscriber to have ZipChat invite someone to the Channel.
 * HELP sends a message with all valid keywords.
+* DESCRIPTION send a message with the Channel description.
+* RENAME allows a Subcriber to update their display name.
 
 ### Potential Bluesteel Support
 
