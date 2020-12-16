@@ -42,13 +42,12 @@ class DefaultMessagePublisher implements MessagePublisher {
           "channel",
           subEvent.getChannel().getName());
 
-    StreamSupport.stream(subscriberRepository.findByChannelId(subEvent.getChannel().getId()).spliterator(),
-        false)
+    subscriberRepository.findByChannelId(subEvent.getChannel().getId()).stream()
         .filter(s -> !s.getMobileNumber().equals(subEvent.getSubscriber().getMobileNumber()))
         .forEach(s -> sendMessage(s.getMobileNumber(), message, eventPayload));
   }
 
-  public String getMessagePrefix(InboundMessage message) {
+  private String getMessagePrefix(InboundMessage message) {
     Subscriber subscriber = subscriberRepository.findById(message.getPayload().getSourceAddress()).orElseThrow(IllegalStateException::new);
     return subscriber.getDisplayName() + ":";
   }
