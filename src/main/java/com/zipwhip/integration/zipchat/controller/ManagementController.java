@@ -105,17 +105,4 @@ public class ManagementController {
     return new ResponseEntity<OrgConfig>(orgConfig, HttpStatus.OK);
   }
 
-  /**
-   * Not yet implemented. Returns the count of records in kafka for the given orgCustomer which have
-   * not yet been processed
-   *
-   * @param orgCustomerId The orgCustomer to inspect the backlog for
-   * @return The number of records not yet processed in kafka for the given customer
-   */
-  @GetMapping(path = "/kafka/backlogCount")
-  public ResponseEntity<Integer> getBacklogCount(
-    @RequestParam(name = "orgCustomerId") Long orgCustomerId) {
-    return ResponseEntity.ok().body(0);
-  }
-
 }

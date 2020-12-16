@@ -25,13 +25,9 @@ class DefaultMessagePublisher implements MessagePublisher {
   @Override
   public void publishMessage(Iterable<Subscriber> subscribers, InboundMessage message) {
 
-    final String sourceAddress = message.getPayload().getSourceAddress();
-    final String messagePrefix = getMessagePrefix(message);
-
     StreamSupport.stream(subscribers.spliterator(), false)
-        .filter(s -> !s.getMobileNumber().equals(sourceAddress))
+        .filter(s -> !s.getMobileNumber().equals(message.getPayload().getSourceAddress()))
         .forEach(s -> sendMessage(s.getMobileNumber(), message));
-
   }
 
   /**
@@ -63,7 +59,7 @@ class DefaultMessagePublisher implements MessagePublisher {
 
   private void sendMessage(String destinationAddress, InboundMessage msg, String overrideText) {
     MessageTracker.Origin origin = MessageTracker.Origin.builder()
-        .featureName(IntegrationFeature.TEXT_FROM_EXTERNAL.toString())
+        .featureName(IntegrationFeature.CONVERSATION_TO_EXTERNAL.toString())
         .integrationId(22)
         .userGenerated(false)
         .orgCustomerId(msg.getOrgCustomerId())
