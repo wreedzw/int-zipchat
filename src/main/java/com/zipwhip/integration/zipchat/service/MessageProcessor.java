@@ -29,7 +29,6 @@ public class MessageProcessor {
       switch (se.getEventType()) {
 
         case JOIN:
-          subscriberManager.removeSubscriberIfSubscribed(se.getSubscriber());
           subscriberManager.updateChannelSubscription(se.getSubscriber(), se.getChannel());
           publisher.publishCommandMessage(se, message);
           break;
