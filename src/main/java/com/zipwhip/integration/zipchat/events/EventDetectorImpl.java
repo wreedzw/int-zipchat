@@ -2,7 +2,6 @@ package com.zipwhip.integration.zipchat.events;
 
 import com.zipwhip.integration.zipchat.domain.Channel;
 import com.zipwhip.integration.zipchat.domain.Subscriber;
-import com.zipwhip.integration.zipchat.domain.SubscriberEvent;
 import com.zipwhip.integration.zipchat.repository.ChannelRepository;
 import com.zipwhip.integration.zipchat.repository.SubscriberRepository;
 import com.zipwhip.message.domain.InboundMessage;
@@ -25,10 +24,10 @@ public class EventDetectorImpl implements EventDetector {
   private final ChannelRepository channelRepository;
 
   @Override
-  public Optional<SubscriberEvent> detectEvent(InboundMessage message) {
+  public Optional<Event> detectEvent(InboundMessage message) {
 
     Matcher m = CMD_PATTERN.matcher(message.getPayload().getBody().trim());
-    SubscriberEvent subEvent = null;
+    SubscriberEvent event = null;
 
     if (m.matches()) {
       String cmd = m.group(1);
@@ -47,17 +46,18 @@ public class EventDetectorImpl implements EventDetector {
       String src = message.getPayload().getSourceAddress();
       Subscriber s = null;
       Channel c = null;
-      String name = null;
+      ChannelEvent ce = null;
 
       switch (evtType) {
 
         case ADDUSER:
         case RENAME:
-          name = m.group(2);
-          break;
+           if (m.groupCount() < 2) {
+             throw new IllegalArgumentException("missing username value: " + message.getPayload().getBody());
+           }
+           s = new Subscriber(src, m.group(2));
+           break;
 
-        case CREATE:
-        case DELETE:
         case JOIN:
         case LEAVE:
           s = subscriberRepository.findById(src).orElse(null);
@@ -72,10 +72,18 @@ public class EventDetectorImpl implements EventDetector {
             return Optional.empty();
           }
           break;
+
+        case CREATE:
+        case DELETE:
+          if (m.groupCount() < 2) {
+            throw new IllegalArgumentException("missing username value: " + message.getPayload().getBody());
+          }
+          ce = new ChannelR
+          break;
       }
 
-      subEvent = new SubscriberEvent(evtType, s, c, name);
+      event = new SubscriberEvent(evtType, s, c);
     }
-    return Optional.ofNullable(subEvent);
+    return Optional.ofNullable(event);
   }
 }

@@ -4,7 +4,7 @@ import com.zipwhip.integration.message.TextService;
 import com.zipwhip.integration.message.TextServiceWrapper;
 import com.zipwhip.integration.message.domain.MessageTracker;
 import com.zipwhip.integration.zipchat.domain.Subscriber;
-import com.zipwhip.integration.zipchat.domain.SubscriberEvent;
+import com.zipwhip.integration.zipchat.events.SubscriberEvent;
 import com.zipwhip.integration.zipchat.repository.SubscriberRepository;
 import com.zipwhip.logging.IntegrationFeature;
 import com.zipwhip.message.domain.InboundMessage;

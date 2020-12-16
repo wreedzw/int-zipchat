@@ -8,15 +8,16 @@ import lombok.RequiredArgsConstructor;
 public enum EventType {
   ADDUSER("adduser", "adduser"),
   CHANNELS("channels", "channels"),
-  CREATE("creat", "created"),
-  DELETE("delet", "deleted"),
+  CREATE("create", "created"),
+  DELETE("delete", "deleted"),
   DESCRIBE("describe", "describe"),
   HELP("help", "help"),
   HISTORY("history", "history"),
   INVITE("invite", "invite"),
   JOIN("join", "joined"),
   LEAVE("leave", "left"),
-  RENAME("rename", "rename"),
+  RENAMECHANNEL("renamechannel", "renamechannel"),
+  RENAMEUSER("renameuser", "renameuser"),
   SUBSCRIBERS("subscribers","subscribers");
 
   private final String keyword;

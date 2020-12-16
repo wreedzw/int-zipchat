@@ -1,6 +1,6 @@
 package com.zipwhip.integration.zipchat.publish;
 
-import com.zipwhip.integration.zipchat.domain.SubscriberEvent;
+import com.zipwhip.integration.zipchat.events.SubscriberEvent;
 import com.zipwhip.message.domain.InboundMessage;
 
 public interface MessagePublisher {

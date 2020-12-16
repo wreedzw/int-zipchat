@@ -57,9 +57,13 @@ sends a message with all valid keywords.
 
 send a message with the Channel description.
 
-/RENAME NewDisplayName
+/RENAMEUSER NewDisplayName
 
-allows a Subcriber to update their display name.
+allows a Subscriber to update their display name.
+
+/RENAMECHANNEL NewChannelName
+
+allows landline owner to update the channel name.
 
 ### Potential Bluesteel Support
 

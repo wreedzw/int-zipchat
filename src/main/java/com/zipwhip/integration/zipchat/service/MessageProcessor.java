@@ -1,7 +1,7 @@
 package com.zipwhip.integration.zipchat.service;
 
 import com.zipwhip.integration.zipchat.domain.Subscriber;
-import com.zipwhip.integration.zipchat.domain.SubscriberEvent;
+import com.zipwhip.integration.zipchat.events.SubscriberEvent;
 import com.zipwhip.integration.zipchat.events.EventDetector;
 import com.zipwhip.integration.zipchat.publish.MessagePublisher;
 import com.zipwhip.message.domain.InboundMessage;
@@ -29,9 +29,9 @@ public class MessageProcessor {
       switch (se.getEventType()) {
 
         case ADDUSER:
+        case RENAME:
           // TODO determine if only the landline itself (or anyone) should be able to add users
-          String displayName = se.getName();
-          subscriberManager.addSubscriber(sub);
+          subscriberManager.addSubscriber(se.getSubscriber());
           break;
 
         case JOIN:
