@@ -7,5 +7,7 @@ import lombok.Value;
 public class SubscriberEvent {
   EventType eventType;
 
-  Subscription subscription;
+  Subscriber subscriber;
+
+  Channel channel;
 }

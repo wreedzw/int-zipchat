@@ -50,6 +50,10 @@
       <artifactId>int-manager-shared</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.zipwhip.integration</groupId>
+      <artifactId>int-text-from-external-lib</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.zipwhip</groupId>
       <artifactId>zipwhip-actuator-starter</artifactId>
       <version>${zipwhip-starter-actuator.version}</version>

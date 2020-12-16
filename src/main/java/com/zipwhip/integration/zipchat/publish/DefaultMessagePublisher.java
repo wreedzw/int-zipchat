@@ -6,14 +6,12 @@ import com.zipwhip.integration.message.domain.MessageTracker;
 import com.zipwhip.integration.zipchat.domain.Subscriber;
 import com.zipwhip.integration.zipchat.domain.SubscriberEvent;
 import com.zipwhip.integration.zipchat.repository.SubscriberRepository;
-import com.zipwhip.integration.zipchat.service.MessageProcessor;
 import com.zipwhip.logging.IntegrationFeature;
 import com.zipwhip.message.domain.InboundMessage;
+import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.function.Consumer;
 
 @Component
 @RequiredArgsConstructor
@@ -30,25 +28,28 @@ class DefaultMessagePublisher implements MessagePublisher {
     final String sourceAddress = message.getPayload().getSourceAddress();
     final String messagePrefix = getMessagePrefix(message);
 
-    subscribers.forEach(x -> {
-      if (!x.getMobileNumber().equals(sourceAddress)) {
-        //do the send
-      }
-    });
+    StreamSupport.stream(subscribers.spliterator(), false)
+        .filter(s -> !s.getMobileNumber().equals(sourceAddress))
+        .forEach(s -> sendMessage(s.getMobileNumber(), message));
 
-    // filter out subscriber matching "from" in "message"
-    // TODO
   }
 
   /**
    * Return modified event text for publishing to subscribers
    * @param subEvent
-   * @param message
-   * @return
    */
-  private String transformCommandMessage(SubscriberEvent subEvent, InboundMessage message) {
-    String subscriberAlias = subEvent.getSubscription().getSubscriberAlias();
-    return subscriberAlias + " "+ subEvent.getEventType().getDisplay();
+  public void publishCommandMessage(SubscriberEvent subEvent, InboundMessage message) {
+
+    String eventPayload = String.join(" ",
+        subEvent.getSubscriber().getDisplayName(),
+          subEvent.getEventType().getDisplay(),
+          "channel",
+          subEvent.getChannel().getName());
+
+    StreamSupport.stream(subscriberRepository.findByChannelId(subEvent.getChannel().getId()).spliterator(),
+        false)
+        .filter(s -> !s.getMobileNumber().equals(subEvent.getSubscriber().getMobileNumber()))
+        .forEach(s -> sendMessage(s.getMobileNumber(), message, eventPayload));
   }
 
   public String getMessagePrefix(InboundMessage message) {
@@ -56,13 +57,22 @@ class DefaultMessagePublisher implements MessagePublisher {
     return subscriber.getDisplayName() + ":";
   }
 
-  private void sendMessage(String destinationAddress, InboundMessage iMessage) {
+  private void sendMessage(String destinationAddress, InboundMessage msg) {
+    sendMessage(destinationAddress, msg);
+  }
+
+  private void sendMessage(String destinationAddress, InboundMessage msg, String overrideText) {
     MessageTracker.Origin origin = MessageTracker.Origin.builder()
-            .featureName(IntegrationFeature.TEXT_FROM_EXTERNAL.toString())
-            .integrationId(22)
-            .userGenerated(false)
-            .orgCustomerId(iMessage.getOrgCustomerId())
-            .build();
-    TextService.Response response = textService.send(iMessage.getPayload().getDestAddress(), destinationAddress, getMessagePrefix() + iMessage.getPayload().getBody(), origin);
+        .featureName(IntegrationFeature.TEXT_FROM_EXTERNAL.toString())
+        .integrationId(22)
+        .userGenerated(false)
+        .orgCustomerId(msg.getOrgCustomerId())
+        .build();
+
+    String payload = overrideText != null ? overrideText : getMessagePrefix(msg) + msg.getPayload().getBody();
+
+    // todo need response?
+    TextService.Response response = textService.send(msg.getPayload().getDestAddress(), destinationAddress,
+        payload, origin);
   }
 }

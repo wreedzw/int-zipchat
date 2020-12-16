@@ -1,37 +1,34 @@
 package com.zipwhip.integration.zipchat.domain;
 
+import lombok.Data;
 import lombok.NonNull;
-import lombok.Value;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * The class contains information about a Channel member
  */
-@Value
+@Data
 @Document("subscriber")
 public class Subscriber {
-
-  String id;
-
-  String channelId;
 
   /**
    * User phone number
    */
   @NonNull
-  String mobileNumber;
+  @Id
+  private final String mobileNumber;
 
   /**
    * User selected this name when they joined the channel
    */
   @NonNull
-  String displayName;
+  private final String displayName;
 
   /**
    * This member Opted Out or was banned, do not send messages
    */
   boolean doNotSend;
 
+  String channelId;
 }
