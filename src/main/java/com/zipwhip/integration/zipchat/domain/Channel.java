@@ -1,7 +1,5 @@
 package com.zipwhip.integration.zipchat.domain;
 
-import java.util.HashSet;
-import java.util.Set;
 import lombok.NonNull;
 import lombok.Value;
 import org.springframework.data.mongodb.core.index.Indexed;

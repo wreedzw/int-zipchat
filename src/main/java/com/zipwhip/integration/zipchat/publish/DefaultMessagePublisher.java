@@ -54,7 +54,7 @@ class DefaultMessagePublisher implements MessagePublisher {
   }
 
   private void sendMessage(String destinationAddress, InboundMessage msg) {
-    sendMessage(destinationAddress, msg);
+    sendMessage(destinationAddress, msg, null);
   }
 
   private void sendMessage(String destinationAddress, InboundMessage msg, String overrideText) {

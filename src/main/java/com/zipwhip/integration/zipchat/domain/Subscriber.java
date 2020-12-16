@@ -3,6 +3,7 @@ package com.zipwhip.integration.zipchat.domain;
 import lombok.Data;
 import lombok.NonNull;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -30,5 +31,6 @@ public class Subscriber {
    */
   boolean doNotSend;
 
+  @Indexed
   String channelId;
 }
