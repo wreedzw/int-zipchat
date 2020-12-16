@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum EventType {
-  JOIN("join", "joined"), LEAVE("leave","left");
+  JOIN("join", "joined"), LEAVE("leave","left"), CREATE("creat","created"), DELETE("delet","deleted");
 
   private final String keyword;
   private final String display;
