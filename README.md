@@ -10,13 +10,15 @@ When the Zipwhip landline receives an incoming message ZipChat performs the foll
 
 ### Keywords
 
-JOIN [username] [channelname]
+/JOIN channel
 
-LEAVE
+/LEAVE
 
-CREATE [channelname]
+/CREATE channel
 
-DELETE [channelname]
+/DELETE channel
+
+/ADDUSER displayname
 
 ### Current Features
 
@@ -29,12 +31,39 @@ Channel subscribers.
 1. ZipChat Integration Settings page will support Channel management (to create, rename, and delete Channels)
 and Subscriber management (delete Subscribers, ban Subscribers preventing them from rejoining).
 
-2. New keywords:
-* SUBSCRIBERS sends a list of all Channel members with their phone number.
-* CHANNELS sends a list of all Channels.
-* HISTORY sends Channel messages from prior to the Subscriber joining.
-* INVITE allows a Subscriber to have ZipChat invite someone to the Channel.
-* HELP sends a message with all valid keywords.
+2. Additional keywords:
+
+/SUBSCRIBERS
+
+sends a list of all Channel members with their phone number.
+
+/CHANNELS
+
+sends a list of all Channels.
+
+/HISTORY MessageCount
+
+sends Channel messages from prior to the Subscriber joining.
+
+/INVITE mobilenumber
+
+allows a Subscriber to have ZipChat invite someone to the Channel.
+
+/HELP
+
+sends a message with all valid keywords.
+
+/DESCRIBE
+
+send a message with the Channel description.
+
+/RENAMEUSER NewDisplayName
+
+allows a Subscriber to update their display name.
+
+/RENAMECHANNEL NewChannelName
+
+allows landline owner to update the channel name.
 
 ### Potential Bluesteel Support
 
