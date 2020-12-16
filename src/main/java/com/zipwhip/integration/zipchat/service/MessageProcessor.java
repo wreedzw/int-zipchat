@@ -29,7 +29,7 @@ public class MessageProcessor {
       switch (se.getEventType()) {
 
         case JOIN:
-          // TODO iterate all channels and remove subscriber if a member
+          subscriberManager.removeSubscriberIfSubscribed(se.getSubscriber());
           subscriberManager.updateChannelSubscription(se.getSubscriber(), se.getChannel());
           publisher.publishCommandMessage(se, message);
           break;
@@ -40,18 +40,22 @@ public class MessageProcessor {
           break;
 
         case CREATE:
-          // TODO determine if only the landline itself can create channels
+          // TODO determine if only the landline itself (or anyone) should be able to create channels
           channelManager.createChannel(se.getChannel());
           break;
 
         case DELETE:
-          // TODO determine if only the landline itself can delete channels
+          // TODO determine if only the landline itself (or anyone) should be able delete channels
           channelManager.deleteChannel(se.getChannel());
           break;
       }
     } else {
-      Subscriber sub = subscriberManager.getSubscriber(message.getPayload().getSourceAddress());
-      publisher.publishMessage(subscriberManager.getChannelSubscribers(sub.getChannelId()), message);
+      try {
+        Subscriber sub = subscriberManager.getSubscriber(message.getPayload().getSourceAddress());
+        publisher.publishMessage(subscriberManager.getChannelSubscribers(sub.getChannelId()), message);
+      } catch (IllegalStateException e) {
+        // swallow exception from subscriber not found, must subscribe first
+      }
     }
   }
 

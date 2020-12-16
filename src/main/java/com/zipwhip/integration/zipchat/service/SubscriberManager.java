@@ -33,4 +33,9 @@ class SubscriberManager {
   void removeSubscriber(Subscriber sub) {
     subscriberRepository.delete(sub);
   }
+
+  void removeSubscriberIfSubscribed(Subscriber sub) {
+    // TODO iterate through all Channels to see if subscriber is a member of any and remove them
+
+  }
 }
