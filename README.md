@@ -10,7 +10,7 @@ When the Zipwhip landline receives an incoming message ZipChat performs the foll
 
 ### Keywords
 
-JOIN [username] [channelname]
+JOIN [channelname] [username]
 
 LEAVE
 

@@ -29,12 +29,12 @@ public class MessageProcessor {
       switch (se.getEventType()) {
 
         case JOIN:
-          subscriberManager.updateChannelSubscription(se.getSubscriber(), se.getChannel());
+          subscriberManager.updateChannelSubscription(se.getChannel(), se.getSubscriber());
           publisher.publishCommandMessage(se, message);
           break;
 
         case LEAVE:
-          subscriberManager.updateChannelSubscription(se.getSubscriber(), null);
+          subscriberManager.updateChannelSubscription(null, se.getSubscriber());
           publisher.publishCommandMessage(se, message);
           break;
 

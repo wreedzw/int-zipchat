@@ -12,7 +12,7 @@ class SubscriberManager {
 
   private final SubscriberRepository subscriberRepository;
 
-  void updateChannelSubscription(Subscriber sub, Channel c) {
+  void updateChannelSubscription(Channel c, Subscriber sub) {
     sub.setChannelId(c == null ? null : c.getId());
 
     subscriberRepository.save(sub);
