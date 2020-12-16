@@ -7,10 +7,12 @@ import com.zipwhip.integration.zipchat.publish.MessagePublisher;
 import com.zipwhip.message.domain.InboundMessage;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class MessageProcessor {
 
   private final SubscriberManager subscriberManager;
@@ -23,38 +25,38 @@ public class MessageProcessor {
 
   public void process(InboundMessage message) {
     Optional<SubscriberEvent> detectedEvent = eventDetector.detectEvent(message);
+    try {
 
-    if (detectedEvent.isPresent()) {
-      SubscriberEvent se = detectedEvent.get();
-      switch (se.getEventType()) {
+      if (detectedEvent.isPresent()) {
+        SubscriberEvent se = detectedEvent.get();
+        switch (se.getEventType()) {
 
-        case JOIN:
-          subscriberManager.updateChannelSubscription(se.getSubscriber(), se.getChannel());
-          publisher.publishCommandMessage(se, message);
-          break;
+          case JOIN:
+            subscriberManager.updateChannelSubscription(se.getSubscriber(), se.getChannel());
+            publisher.publishCommandMessage(se, message);
+            break;
 
-        case LEAVE:
-          subscriberManager.updateChannelSubscription(se.getSubscriber(), null);
-          publisher.publishCommandMessage(se, message);
-          break;
+          case LEAVE:
+            subscriberManager.updateChannelSubscription(se.getSubscriber(), null);
+            publisher.publishCommandMessage(se, message);
+            break;
 
-        case CREATE:
-          // TODO determine if only the landline itself (or anyone) should be able to create channels
-          channelManager.createChannel(se.getChannel());
-          break;
+          case CREATE:
+            // TODO determine if only the landline itself (or anyone) should be able to create channels
+            channelManager.createChannel(se.getChannel());
+            break;
 
-        case DELETE:
-          // TODO determine if only the landline itself (or anyone) should be able delete channels
-          channelManager.deleteChannel(se.getChannel());
-          break;
-      }
-    } else {
-      try {
+          case DELETE:
+            // TODO determine if only the landline itself (or anyone) should be able delete channels
+            channelManager.deleteChannel(se.getChannel());
+            break;
+        }
+      } else {
         publisher.publishMessage(message);
-      } catch (IllegalStateException e) {
-        // TODO - put the whole body of this method into try and not just this call, and
-        //  add "system" response message informing sender the message was rejected
       }
+    } catch (RuntimeException e) {
+      log.error("Failed to process message {}", message, e);
+      // TODO - add "system" response message informing sender the message was rejected
     }
   }
 
