@@ -83,7 +83,7 @@ public class EventDetectorImpl implements EventDetector {
           if (m.groupCount() < 2) {
             throw new IllegalArgumentException("missing channel name: {}" + message.getPayload().getBody());
           }
-          event = new ChannelEvent(eventType, new Channel(channelName, channelName));
+          event = new ChannelEvent(eventType, new Channel(channelName, channelName, null));
           break;
 
         case DELETECHANNEL:

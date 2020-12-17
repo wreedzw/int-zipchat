@@ -16,4 +16,6 @@ public class Channel {
   @Indexed
   @NonNull
   String name;
+
+  String description;
 }

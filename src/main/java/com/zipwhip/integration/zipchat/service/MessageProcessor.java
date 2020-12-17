@@ -60,6 +60,22 @@ public class MessageProcessor {
             // TODO determine if only the landline itself (or anyone) should be able delete channels
             channelManager.deleteChannel(channelEvent.getChannel());
             break;
+
+          case HELP:
+            // TODO
+            break;
+
+          case CHANNELS:
+            // TODO implement channels
+            break;
+
+          case SUBSCRIBERS:
+            // TODO implement subscribers
+            break;
+
+          case INVITE:
+            // TODO implement invite
+            break;
         }
       } else {
         try {
