@@ -29,27 +29,27 @@ public class MessageProcessor {
       switch (se.getEventType()) {
 
         case ADDUSER:
-        case RENAME:
+        case RENAMEUSER:
           // TODO determine if only the landline itself (or anyone) should be able to add users
           subscriberManager.addSubscriber(se.getSubscriber());
           break;
 
-        case JOIN:
+        case JOINCHANNEL:
           subscriberManager.updateChannelSubscription(se.getChannel(), se.getSubscriber());
           publisher.publishCommandMessage(se, message);
           break;
 
-        case LEAVE:
+        case LEAVECHANNEL:
           subscriberManager.updateChannelSubscription(null, se.getSubscriber());
           publisher.publishCommandMessage(se, message);
           break;
 
-        case CREATE:
+        case CREATECHANNEL:
           // TODO determine if only the landline itself (or anyone) should be able to create channels
           channelManager.createChannel(se.getChannel());
           break;
 
-        case DELETE:
+        case DELETECHANNEL:
           // TODO determine if only the landline itself (or anyone) should be able delete channels
           channelManager.deleteChannel(se.getChannel());
           break;

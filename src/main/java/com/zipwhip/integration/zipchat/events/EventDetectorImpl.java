@@ -27,7 +27,9 @@ public class EventDetectorImpl implements EventDetector {
   public Optional<Event> detectEvent(InboundMessage message) {
 
     Matcher m = CMD_PATTERN.matcher(message.getPayload().getBody().trim());
-    SubscriberEvent event = null;
+    Event event = null;
+    Subscriber s = null;
+    Channel c = null;
 
     if (m.matches()) {
       String cmd = m.group(1);
@@ -44,22 +46,23 @@ public class EventDetectorImpl implements EventDetector {
       if (evtType == null) return Optional.empty();
 
       String src = message.getPayload().getSourceAddress();
-      Subscriber s = null;
-      Channel c = null;
-      ChannelEvent ce = null;
 
       switch (evtType) {
 
         case ADDUSER:
-        case RENAME:
+        case RENAMEUSER:
            if (m.groupCount() < 2) {
-             throw new IllegalArgumentException("missing username value: " + message.getPayload().getBody());
+             throw new IllegalArgumentException("missing user name: " + message.getPayload().getBody());
            }
            s = new Subscriber(src, m.group(2));
+           event = new SubscriberEvent(evtType, s, c);
            break;
 
-        case JOIN:
-        case LEAVE:
+        case JOINCHANNEL:
+          if (m.groupCount() < 2) {
+            throw new IllegalArgumentException("missing channel name: " + message.getPayload().getBody());
+          }
+        case LEAVECHANNEL:
           s = subscriberRepository.findById(src).orElse(null);
           if (s == null) {
             log.warn("Subscriber with phone number {} not found", src);
@@ -71,18 +74,25 @@ public class EventDetectorImpl implements EventDetector {
             log.warn("Specified channel {} not found", channelName);
             return Optional.empty();
           }
+          event = new ChannelEvent(evtType, c);
+
           break;
 
-        case CREATE:
-        case DELETE:
+        case CREATECHANNEL:
           if (m.groupCount() < 2) {
-            throw new IllegalArgumentException("missing username value: " + message.getPayload().getBody());
+            throw new IllegalArgumentException("missing channel name: " + message.getPayload().getBody());
           }
-          ce = new ChannelR
+          ce = new ChannelEvent(EventType.CREATECHANNEL, new Channel(m.group(2), m.group(2)));
+          break;
+
+        case DELETECHANNEL:
+          if (m.groupCount() < 2) {
+            throw new IllegalArgumentException("missing channel name: " + message.getPayload().getBody());
+          }
+          ChannelRepository channelRepository
           break;
       }
 
-      event = new SubscriberEvent(evtType, s, c);
     }
     return Optional.ofNullable(event);
   }

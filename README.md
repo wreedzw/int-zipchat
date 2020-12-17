@@ -10,13 +10,13 @@ When the Zipwhip landline receives an incoming message ZipChat performs the foll
 
 ### Keywords
 
-/JOIN channel
+/JOINCHANNEL channelname
 
-/LEAVE
+/LEAVECHANNEL
 
-/CREATE channel
+/CREATECHANNEL channelname
 
-/DELETE channel
+/DELETECHANNEL channelname
 
 /ADDUSER displayname
 
