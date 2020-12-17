@@ -52,5 +52,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="int-zipchat-service" scope="TEST" />
   </component>
 </module>

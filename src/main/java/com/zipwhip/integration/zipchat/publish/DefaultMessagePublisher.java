@@ -53,7 +53,7 @@ class DefaultMessagePublisher implements MessagePublisher {
   private String getMessagePrefix(InboundMessage message) {
     Subscriber subscriber = subscriberRepository.findById(message.getPayload().getSourceAddress())
         .orElseThrow(IllegalStateException::new);
-    return subscriber.getDisplayName() + ":";
+    return subscriber.getDisplayName() + ": ";
   }
 
   private void sendMessage(String destinationAddress, InboundMessage msg) {

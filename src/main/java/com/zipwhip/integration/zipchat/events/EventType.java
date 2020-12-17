@@ -16,8 +16,8 @@ public enum EventType {
   INVITE("invite", "invite"),
   JOINCHANNEL("joinchannel", "channel joined"),
   LEAVECHANNEL("leavechannel", "channel left"),
-  RENAMECHANNEL("renamechannel", "renamechannel"),
-  RENAMEUSER("renameuser", "renameuser"),
+  RENAMECHANNEL("renamechannel", "rename channel"),
+  RENAMEUSER("renameuser", "rename user"),
   SUBSCRIBERS("subscribers","subscribers");
 
   private final String keyword;

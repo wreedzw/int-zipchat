@@ -23,7 +23,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.zipwhip.integration.zipchat.domain.Channel;
 import com.zipwhip.integration.zipchat.domain.Subscriber;
-import com.zipwhip.integration.zipchat.domain.SubscriberEvent;
+import com.zipwhip.integration.zipchat.events.SubscriberEvent;
 import com.zipwhip.integration.zipchat.repository.ChannelRepository;
 import com.zipwhip.integration.zipchat.repository.SubscriberRepository;
 import com.zipwhip.message.domain.InboundMessage;

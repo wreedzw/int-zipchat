@@ -18,16 +18,6 @@ When the Zipwhip landline receives an incoming message ZipChat performs the foll
 
 /DELETECHANNEL channelname
 
-/JOIN channel
-
-/LEAVE
-
-/CREATE channel
-
-/DELETE channel
-
-/ADDUSER displayname
-
 ### Current Features
 
 ZipChat supports creating multiple Channels, however a user may only be subscribed to one Channel at a time.
