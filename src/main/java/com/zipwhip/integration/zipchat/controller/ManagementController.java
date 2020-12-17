@@ -1,10 +1,8 @@
 package com.zipwhip.integration.zipchat.controller;
 
-
 import com.zipwhip.integration.zipchat.entities.OrgConfig;
 import com.zipwhip.integration.zipchat.poller.DatahubPoller;
 import com.zipwhip.integration.zipchat.repository.OrgConfigRepository;
-import com.zipwhip.integration.zipchat.service.SyncServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +36,6 @@ public class ManagementController {
    * A poller to use for forcing processing of a message
    */
   private final DatahubPoller poller;
-
-  /**
-   * Sync service which can be used to filter sync targets
-   */
-  private final SyncServiceImpl syncService;
 
   /**
    * The ID for the integration
@@ -110,19 +103,6 @@ public class ManagementController {
       this.configRepo.delete(orgConfig);
     }
     return new ResponseEntity<OrgConfig>(orgConfig, HttpStatus.OK);
-  }
-
-  /**
-   * Not yet implemented. Returns the count of records in kafka for the given orgCustomer which have
-   * not yet been processed
-   *
-   * @param orgCustomerId The orgCustomer to inspect the backlog for
-   * @return The number of records not yet processed in kafka for the given customer
-   */
-  @GetMapping(path = "/kafka/backlogCount")
-  public ResponseEntity<Integer> getBacklogCount(
-    @RequestParam(name = "orgCustomerId") Long orgCustomerId) {
-    return ResponseEntity.ok().body(0);
   }
 
 }
