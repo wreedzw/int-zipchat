@@ -11,9 +11,10 @@
 
   <parent>
     <groupId>com.zipwhip.integration</groupId>
+
     <artifactId>int-service-starter-parent</artifactId>
     <version>0.0.22-SNAPSHOT</version>
-  </parent>
+=  </parent>
 
   <properties>
 
