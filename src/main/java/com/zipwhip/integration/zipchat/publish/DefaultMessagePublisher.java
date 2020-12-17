@@ -3,6 +3,7 @@ package com.zipwhip.integration.zipchat.publish;
 import com.zipwhip.integration.message.TextService;
 import com.zipwhip.integration.message.TextServiceWrapper;
 import com.zipwhip.integration.message.domain.MessageTracker;
+import com.zipwhip.integration.zipchat.domain.Channel;
 import com.zipwhip.integration.zipchat.domain.Subscriber;
 import com.zipwhip.integration.zipchat.events.SubscriberEvent;
 import com.zipwhip.integration.zipchat.repository.SubscriberRepository;
@@ -43,12 +44,15 @@ class DefaultMessagePublisher implements MessagePublisher {
 
     subscriberRepository.findByChannelId(subEvent.getChannel().getId()).stream()
         .filter(excludeSelf(subEvent.getSubscriber().getMobileNumber()))
+        .filter(excludeOtherChannels(subEvent.getSubscriber().getChannelId()))
         .forEach(s -> sendMessage(s.getMobileNumber(), message, eventPayload));
   }
 
   private Predicate<Subscriber> excludeSelf(String myNumber) {
     return s -> !s.getMobileNumber().equals(myNumber);
   }
+
+  private Predicate<Subscriber> excludeOtherChannels(String myChannel) {return s -> s.getChannelId().equals(myChannel); }
 
   private String getMessagePrefix(InboundMessage message) {
     Subscriber subscriber = subscriberRepository.findById(message.getPayload().getSourceAddress())

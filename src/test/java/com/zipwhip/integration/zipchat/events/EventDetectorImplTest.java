@@ -55,38 +55,38 @@ public class EventDetectorImplTest {
 
   @Test
   public void joinValidChannel() {
-    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.JOIN.getKeyword() +
+    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.JOINCHANNEL.getKeyword() +
         " " + CHAN_NAME);
 
-    Optional<SubscriberEvent> res = eventDetector.detectEvent(inboundMessage);
+    Optional<Event> res = eventDetector.detectEvent(inboundMessage);
 
     verify(subscriberRepository).findById(SENDER_ADDR);
     verify(channelRepository).findChannelByName(CHAN_NAME);
 
     assertTrue(res.isPresent());
-    assertEquals(EventType.JOIN, res.get().getEventType());
+    assertEquals(EventType.JOINCHANNEL, res.get().getEventType());
   }
 
   @Test
   public void joinValidChannelNewUser() {
-    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.JOIN.getKeyword() +
+    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.JOINCHANNEL.getKeyword() +
         " " + CHAN_NAME + " " + "BobTheNewUser");
     reset(subscriberRepository);
     when(subscriberRepository.findById(anyString())).thenReturn(Optional.empty());
 
-    Optional<SubscriberEvent> res = eventDetector.detectEvent(inboundMessage);
+    Optional<Event> res = eventDetector.detectEvent(inboundMessage);
 
     verify(subscriberRepository).findById(SENDER_ADDR);
     verify(channelRepository).findChannelByName(CHAN_NAME);
 
     assertTrue(res.isPresent());
-    assertEquals(EventType.JOIN, res.get().getEventType());
+    assertEquals(EventType.JOINCHANNEL, res.get().getEventType());
   }
 
   @Test
   public void joinInvalidChannel() {
     final String chan = "foo";
-    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.JOIN.getKeyword() +
+    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.JOINCHANNEL.getKeyword() +
         " " + chan);
 
     assertFalse(eventDetector.detectEvent(inboundMessage).isPresent());
@@ -97,22 +97,22 @@ public class EventDetectorImplTest {
 
   @Test
   public void leaveValidChannel() {
-    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.LEAVE.getKeyword() +
+    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.LEAVECHANNEL.getKeyword() +
         " " + CHAN_NAME);
 
-    Optional<SubscriberEvent> res = eventDetector.detectEvent(inboundMessage);
+    Optional<Event> res = eventDetector.detectEvent(inboundMessage);
 
     verify(subscriberRepository).findById(SENDER_ADDR);
     verify(channelRepository).findChannelByName(CHAN_NAME);
 
     assertTrue(res.isPresent());
-    assertEquals(EventType.LEAVE, res.get().getEventType());
+    assertEquals(EventType.LEAVECHANNEL, res.get().getEventType());
   }
 
   @Test
   public void leaveInvalidChannel() {
     final String chan = "foo";
-    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.LEAVE.getKeyword() +
+    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.LEAVECHANNEL.getKeyword() +
         " " + chan);
 
     assertFalse(eventDetector.detectEvent(inboundMessage).isPresent());
@@ -133,7 +133,7 @@ public class EventDetectorImplTest {
 
   @Test
   public void joinSubscriberNotFound() {
-    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.JOIN.getKeyword() +
+    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.JOINCHANNEL.getKeyword() +
         " " + CHAN_NAME);
     when(subscriberRepository.findById(anyString())).thenReturn(Optional.empty());
 
@@ -144,7 +144,7 @@ public class EventDetectorImplTest {
 
   @Test
   public void leaveSubscriberNotFound() {
-    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.LEAVE.getKeyword() +
+    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.LEAVECHANNEL.getKeyword() +
         " " + CHAN_NAME);
     when(subscriberRepository.findById(anyString())).thenReturn(Optional.empty());
 
