@@ -75,3 +75,13 @@ messages of a single Channel.
 
 To run ZipChat locally you must clone https://github.com/Zipwhip/int-local-env and follow the steps
 in the readme.md to stand up the base services. Then modify the configuration to include ZipChat
+
+#### Prerequisites
+
+1. VPN
+2. local mongodb instance and ip address provided in startup script below
+3. local docker image from `mvn clean package docker:build`
+
+#### Run Docker Container
+
+	docker run -p 8080:8080 -e LOGSTASH_ENDPOINT=ae1ba77558b7211e89ea30610e8ac6c8-82f8ef7d85a07e55.elb.us-west-2.amazonaws.com -e LOGSTASH_PORT=5019 -e LOGSTASH_BUFFER=262144 -e SPRING_CLOUD_CONSUL_ENABLED=false  -e kafka.hosts=zw-preprod-kafka-bootstrap.us-west-2.aws.zwpreprod.io:9094 -e kafka.autoCommit=false  -e SERVICE_NAME=int-zipchat-service -e spring.data.mongodb.uri=mongodb://${LOCAL_IP}:27017 -e SPRING_DATA_MONGODB_DATABASE=integrations -e spring.profiles.active=test -e zipwhip.int-manager.url=https://int-gateway.us-west-2.aws.zwpreprod.io -e spring.application.name=int-zipchat -e zipwhip.toolkit.url.bs=https://toolkit.us-west-2.aws.zwpreprod.io  zipwhip/int-zipchat-service:latest
