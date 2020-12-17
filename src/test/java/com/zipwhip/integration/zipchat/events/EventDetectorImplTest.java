@@ -1,14 +1,18 @@
 package com.zipwhip.integration.zipchat.events;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import com.zipwhip.integration.zipchat.domain.Channel;
-import com.zipwhip.integration.zipchat.domain.Subscriber;
-import com.zipwhip.integration.zipchat.domain.SubscriberEvent;
-import com.zipwhip.integration.zipchat.repository.ChannelRepository;
-import com.zipwhip.integration.zipchat.repository.SubscriberRepository;
-import com.zipwhip.message.domain.InboundMessage;
 import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,12 +21,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import com.zipwhip.integration.zipchat.domain.Channel;
+import com.zipwhip.integration.zipchat.domain.Subscriber;
+import com.zipwhip.integration.zipchat.domain.SubscriberEvent;
+import com.zipwhip.integration.zipchat.repository.ChannelRepository;
+import com.zipwhip.integration.zipchat.repository.SubscriberRepository;
+import com.zipwhip.message.domain.InboundMessage;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EventDetectorImplTest {
@@ -53,6 +57,22 @@ public class EventDetectorImplTest {
   public void joinValidChannel() {
     when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.JOIN.getKeyword() +
         " " + CHAN_NAME);
+
+    Optional<SubscriberEvent> res = eventDetector.detectEvent(inboundMessage);
+
+    verify(subscriberRepository).findById(SENDER_ADDR);
+    verify(channelRepository).findChannelByName(CHAN_NAME);
+
+    assertTrue(res.isPresent());
+    assertEquals(EventType.JOIN, res.get().getEventType());
+  }
+
+  @Test
+  public void joinValidChannelNewUser() {
+    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.JOIN.getKeyword() +
+        " " + CHAN_NAME + " " + "BobTheNewUser");
+    reset(subscriberRepository);
+    when(subscriberRepository.findById(anyString())).thenReturn(Optional.empty());
 
     Optional<SubscriberEvent> res = eventDetector.detectEvent(inboundMessage);
 

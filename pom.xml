@@ -11,9 +11,10 @@
 
   <parent>
     <groupId>com.zipwhip.integration</groupId>
+
     <artifactId>int-service-starter-parent</artifactId>
     <version>0.0.22-SNAPSHOT</version>
-  </parent>
+=  </parent>
 
   <properties>
 
@@ -57,6 +58,17 @@
       <groupId>com.zipwhip</groupId>
       <artifactId>zipwhip-actuator-starter</artifactId>
       <version>${zipwhip-starter-actuator.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-consul-all</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.cloud</groupId>
+          <artifactId>spring-cloud-starter-consul-bus</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- Test dependencies -->

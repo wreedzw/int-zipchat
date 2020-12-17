@@ -2,8 +2,6 @@ package com.zipwhip.integration.zipchat;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cloud.client.SpringCloudApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
@@ -17,22 +15,30 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @ComponentScan(basePackages = {
     "com.zipwhip.kafka.config",
     "com.zipwhip.service",
+    "com.zipwhip.message.service.proxy",
+    "com.zipwhip.integration.message",
+    "com.zipwhip.environment",
+    "com.zipwhip.cloud.client.proxy",
+    "com.zipwhip.integration.zipchat",
+    "com.zipwhip.legacy.config"
 })
 
 /**
  * The spring boot main class which runs the application
  */
-@SpringCloudApplication
-@EnableCaching
 @EnableScheduling
 @EnableKafka
 @EnableFeignClients(basePackages = {
+    "com.zipwhip.integration.message",
     "com.zipwhip.cloud.client",
     "com.zipwhip.customerservice.client",
     "com.zipwhip.environment",
+    "com.zipwhip.message.service",
     "com.zipwhip.subscription.client"
 })
-@EnableMongoRepositories
+@EnableMongoRepositories(basePackages = {"com.zipwhip.environment", "com.zipwhip.integration.zipchat",
+    "com.zipwhip.integration.message", "com.zipwhip.kafka.poller.status.repository",
+    "com.zipwhip.integration.lock"})
 public class ZipChatApp { // NOSONAR
 
   /**
