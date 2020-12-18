@@ -6,19 +6,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum EventType {
-  ADDUSER("adduser", "user added"),
-  CHANNELS("channels", "channels"),
-  CREATECHANNEL("createchannel", "channel created"),
-  DELETECHANNEL("deletechannel", "channel deleted"),
+  CREATE("createchannel", "channel created"),
+  DELETE("deletechannel", "channel deleted"),
   DESCRIBE("describe", "describe"),
   HELP("help", "help"),
   HISTORY("history", "history"),
   INVITE("invite", "invite"),
-  JOINCHANNEL("joinchannel", "channel joined"),
-  LEAVECHANNEL("leavechannel", "channel left"),
+  JOIN("joinchannel", "channel joined"),
+  LEAVE("leavechannel", "channel left"),
+  LISTCHANNELS("listchannels", "channels listed"),
+  LISTSUBSCRIBERS("listsubscribers", "subscribers listed"),
   RENAMECHANNEL("renamechannel", "rename channel"),
-  RENAMEUSER("renameuser", "rename user"),
-  SUBSCRIBERS("subscribers","subscribers");
+  RENAMESUBSCRIBER("renameuser", "rename user"),
+  SETDESCRIPTION("setdescription", "description set"),
+  SILENT("silent", "silent set");
 
   private final String keyword;
   private final String display;

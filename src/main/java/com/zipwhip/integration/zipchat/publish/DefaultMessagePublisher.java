@@ -3,9 +3,8 @@ package com.zipwhip.integration.zipchat.publish;
 import com.zipwhip.integration.message.TextService;
 import com.zipwhip.integration.message.TextServiceWrapper;
 import com.zipwhip.integration.message.domain.MessageTracker;
-import com.zipwhip.integration.zipchat.domain.Channel;
 import com.zipwhip.integration.zipchat.domain.Subscriber;
-import com.zipwhip.integration.zipchat.events.SubscriberEvent;
+import com.zipwhip.integration.zipchat.events.Event;
 import com.zipwhip.integration.zipchat.repository.SubscriberRepository;
 import com.zipwhip.logging.IntegrationFeature;
 import com.zipwhip.message.domain.InboundMessage;
@@ -34,7 +33,7 @@ class DefaultMessagePublisher implements MessagePublisher {
   }
 
   @Override
-  public void publishCommandMessage(SubscriberEvent subEvent, InboundMessage message) {
+  public void publishCommandMessage(Event subEvent, InboundMessage message) {
 
     String eventPayload = String.join(" ",
         subEvent.getSubscriber().getDisplayName(),
@@ -46,6 +45,11 @@ class DefaultMessagePublisher implements MessagePublisher {
         .filter(excludeSelf(subEvent.getSubscriber().getMobileNumber()))
         .filter(excludeOtherChannels(subEvent.getSubscriber().getChannelId()))
         .forEach(s -> sendMessage(s.getMobileNumber(), message, eventPayload));
+  }
+
+  @Override
+  public void publishToSender(Event subEvent, InboundMessage message, String overrideMessage) {
+    sendMessage(subEvent.getSubscriber().getMobileNumber(), message, overrideMessage);
   }
 
   private Predicate<Subscriber> excludeSelf(String myNumber) {

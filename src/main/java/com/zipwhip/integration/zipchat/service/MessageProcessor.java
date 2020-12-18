@@ -1,8 +1,6 @@
 package com.zipwhip.integration.zipchat.service;
 
-import com.zipwhip.integration.zipchat.events.ChannelEvent;
 import com.zipwhip.integration.zipchat.events.Event;
-import com.zipwhip.integration.zipchat.events.SubscriberEvent;
 import com.zipwhip.integration.zipchat.events.EventDetector;
 import com.zipwhip.integration.zipchat.publish.MessagePublisher;
 import com.zipwhip.message.domain.InboundMessage;
@@ -30,52 +28,69 @@ public class MessageProcessor {
 
       if (detectedEvent.isPresent()) {
         Event event = detectedEvent.get();
-        SubscriberEvent subscriberEvent = (SubscriberEvent) event;
-        ChannelEvent channelEvent = (ChannelEvent) event;
 
         switch (event.getEventType()) {
 
-          case ADDUSER:
-          case RENAMEUSER:
-            // TODO determine if only the landline itself (or anyone) should be able to add users
-            subscriberManager.addSubscriber(subscriberEvent.getSubscriber());
+          case CREATE:
+            channelManager.createChannel(event.getChannel());
+            publisher.publishToSender(event, message, event.getResponseMessage());
             break;
 
-          case JOINCHANNEL:
-            subscriberManager.updateChannelSubscription(channelEvent.getChannel(), subscriberEvent.getSubscriber());
-            publisher.publishCommandMessage(subscriberEvent, message);
+          case DELETE:
+            channelManager.deleteChannel(event.getChannel());
+            publisher.publishToSender(event, message, event.getResponseMessage());
             break;
 
-          case LEAVECHANNEL:
-            subscriberManager.updateChannelSubscription(null, subscriberEvent.getSubscriber());
-            publisher.publishCommandMessage(subscriberEvent, message);
-            break;
-
-          case CREATECHANNEL:
-            // TODO determine if only the landline itself (or anyone) should be able to create channels
-            channelManager.createChannel(channelEvent.getChannel());
-            break;
-
-          case DELETECHANNEL:
-            // TODO determine if only the landline itself (or anyone) should be able delete channels
-            channelManager.deleteChannel(channelEvent.getChannel());
+          case DESCRIBE:
+            publisher.publishToSender(event, message, event.getResponseMessage());
             break;
 
           case HELP:
-            // TODO
+            publisher.publishToSender(event, message, event.getResponseMessage());
             break;
 
-          case CHANNELS:
-            // TODO implement channels
-            break;
-
-          case SUBSCRIBERS:
-            // TODO implement subscribers
-            break;
+          case HISTORY:
+            publisher.publishToSender(event, message, event.getResponseMessage());
 
           case INVITE:
-            // TODO implement invite
+            publisher.publishToSender(event, message, event.getResponseMessage());
             break;
+
+          case JOIN:
+            subscriberManager.updateChannelSubscription(event.getChannel(), event.getSubscriber());
+            publisher.publishCommandMessage(event, message);
+            break;
+
+          case LEAVE:
+            subscriberManager.updateChannelSubscription(null, event.getSubscriber());
+            publisher.publishCommandMessage(event, message);
+            break;
+
+          case LISTCHANNELS:
+            publisher.publishToSender(event, message, event.getResponseMessage());
+            break;
+
+          case LISTSUBSCRIBERS:
+            publisher.publishToSender(event, message, event.getResponseMessage());
+            break;
+
+          case RENAMECHANNEL:
+            publisher.publishCommandMessage(event, message);
+            break;
+
+          case RENAMESUBSCRIBER:
+            subscriberManager.addSubscriber(event.getSubscriber());
+            publisher.publishCommandMessage(event, message);
+            break;
+
+          case SETDESCRIPTION:
+            publisher.publishToSender(event, message, event.getResponseMessage());
+            break;
+
+          case SILENT:
+            publisher.publishToSender(event, message, event.getResponseMessage());
+            break;
+
         }
       } else {
         try {

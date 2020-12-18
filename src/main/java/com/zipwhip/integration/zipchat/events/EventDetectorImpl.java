@@ -33,9 +33,12 @@ public class EventDetectorImpl implements EventDetector {
     EventType eventType = null;
     Subscriber subscriber = null;
     Channel channel = null;
-    String channelName = null;
+    String name = null;
+    String responseMessage = null;
+
     if (m.groupCount() >= 2) {
-      channelName = m.group(2);
+      // either channel name or subscriber name
+      name = m.group(2);
     }
 
     if (m.matches()) {
@@ -52,52 +55,95 @@ public class EventDetectorImpl implements EventDetector {
 
       switch (eventType) {
 
-        case ADDUSER:
-        case RENAMEUSER:
-           if (m.groupCount() < 2) {
-             throw new IllegalArgumentException("missing user name: " + message.getPayload().getBody());
-           }
-           subscriber = new Subscriber(source, m.group(2));
-           event = new SubscriberEvent(eventType, subscriber, channel);
-           break;
-
-        case JOINCHANNEL:
+        case CREATE:
           if (m.groupCount() < 2) {
-            throw new IllegalArgumentException("missing channel name: " + message.getPayload().getBody());
+            responseMessage = "Unable to create, missing channel name";
           }
-        case LEAVECHANNEL:
+          channel = channelRepository.findChannelByName(name);
+          if (channel != null) {
+            responseMessage = "Unable to create, channel " + name + " already exists";
+          }
+          break;
+
+        case DELETE:
+          if (m.groupCount() < 2) {
+            responseMessage = "Unable to delete, missing channel name";
+          }
+          channel = channelRepository.findChannelByName(name);
+          if (channel == null) {
+            responseMessage = "Unable to delete, channel name " + name + " was not found";
+          }
+          break;
+
+        case DESCRIBE:
+          responseMessage = "/describe is not yet implemented";
+          break;
+
+        case HELP:
+          responseMessage = "/help is not yet implemented";
+          break;
+
+        case HISTORY:
+          responseMessage = "/history is not yet implemented";
+          break;
+
+        case INVITE:
+          responseMessage = "/invite is not yet implemented";
+          break;
+
+        case JOIN:
+          if (m.groupCount() < 2) {
+            responseMessage = "unable to join, missing channel name";
+          }
           subscriber = subscriberRepository.findById(source).orElse(null);
           if (subscriber == null) {
-            log.warn("Subscriber with phone number {} not found", source);
-            return Optional.empty();
+            responseMessage = "subscriber with phone number " + source + " not found";
           }
-          channel = channelRepository.findChannelByName(channelName);
+          channel = channelRepository.findChannelByName(name);
           if (channel == null) {
-            log.warn("Specified channel {} not found", channelName);
-            return Optional.empty();
+            responseMessage = "channel " + name + " not found";
           }
-          event = new ChannelEvent(eventType, channel);
           break;
 
-        case CREATECHANNEL:
-          if (m.groupCount() < 2) {
-            throw new IllegalArgumentException("missing channel name: {}" + message.getPayload().getBody());
+        case LEAVE:
+          subscriber = subscriberRepository.findById(source).orElse(null);
+          if (subscriber == null) {
+            responseMessage = "subscriber with phone number " + source + " not found";
           }
-          event = new ChannelEvent(eventType, new Channel(channelName, channelName, null));
+          channel = channelRepository.findChannelByName(name);
+          if (channel == null) {
+            responseMessage = "channel " + name + " not found";
+          }
           break;
 
-        case DELETECHANNEL:
-          if (m.groupCount() < 2) {
-            throw new IllegalArgumentException("missing channel name: " + message.getPayload().getBody());
-          }
-          channel = channelRepository.findChannelByName(channelName);
-          if (channel == null) {
-            log.warn("Specified channel {} not found", channelName);
-            return Optional.empty();
-          }
-          event = new ChannelEvent(eventType, channel);
+        case LISTCHANNELS:
+          responseMessage = "/listchannels is not yet implemented";
+          break;
+
+        case LISTSUBSCRIBERS:
+          responseMessage = "/listsubscribers is not yet implemented";
+          break;
+
+        case RENAMECHANNEL:
+          responseMessage = "/renamechannel is not yet implemented";
+          break;
+
+        case RENAMESUBSCRIBER:
+           if (m.groupCount() < 2) {
+             responseMessage = "Unable to rename subscriber, missing subscriber name";
+           }
+           subscriber = new Subscriber(source, name);
+           break;
+
+        case SETDESCRIPTION:
+          responseMessage = "/setdescription is not yet implemented";
+          break;
+
+        case SILENT:
+          responseMessage = "/silent is not yet implemented";
           break;
       }
+      event = new Event(eventType, subscriber, channel, responseMessage);
 
     }
     return Optional.ofNullable(event);

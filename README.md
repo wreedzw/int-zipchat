@@ -10,13 +10,61 @@ When the Zipwhip landline receives an incoming message ZipChat performs the foll
 
 ### Keywords
 
-/JOINCHANNEL channelname
+/CREATE channelname
 
-/LEAVECHANNEL
+Creates a channel
 
-/CREATECHANNEL channelname
+/DELETE channelname
 
-/DELETECHANNEL channelname
+Deletes a channel
+
+/DESCRIBE
+
+Send a message with the Channel description. Not yet implemented.
+
+/HELP
+
+Sends a message with all valid keywords. Not yet implemented.
+
+/HISTORY MessageCount
+
+Sends Channel messages from prior to the Subscriber joining. Not yet implemented.
+
+/INVITE mobilenumber
+
+Allows a Subscriber to have ZipChat invite someone to the Channel. Not yet implemented.
+
+/JOIN channelname
+
+Joins a channel
+
+/LEAVE channelname
+
+Leaves a channel
+
+/LISTCHANNELS
+
+Sends a list of all Channels. Not yet implemented.
+
+/LISTSUBSCRIBERS channelname
+
+Sends a list of all subscribers in that channel. Not yet implemented.
+
+/RENAMECHANNEL NewChannelName
+
+Rename an existing Channel.
+
+/RENAMEUSER NewDisplayName
+
+Rename Subscriber's display name.
+
+/SETDESCRIPTION channelname
+
+Sets the description for the channel. Not yet implemented.
+
+/SILENT
+
+Toggle on or off the display of JOIN, LEAVE, CREATE, DELETE messages.
 
 ### Current Features
 
@@ -31,37 +79,6 @@ and Subscriber management (delete Subscribers, ban Subscribers preventing them f
 
 2. Additional keywords:
 
-/SUBSCRIBERS
-
-sends a list of all Channel members with their phone number.
-
-/CHANNELS
-
-sends a list of all Channels.
-
-/HISTORY MessageCount
-
-sends Channel messages from prior to the Subscriber joining.
-
-/INVITE mobilenumber
-
-allows a Subscriber to have ZipChat invite someone to the Channel.
-
-/HELP
-
-sends a message with all valid keywords.
-
-/DESCRIBE
-
-send a message with the Channel description.
-
-/RENAMEUSER NewDisplayName
-
-allows a Subscriber to update their display name.
-
-/RENAMECHANNEL NewChannelName
-
-allows landline owner to update the channel name.
 
 ### Potential Bluesteel Support
 

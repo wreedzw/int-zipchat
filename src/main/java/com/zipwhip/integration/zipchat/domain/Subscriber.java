@@ -13,24 +13,21 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document("subscriber")
 public class Subscriber {
 
-  /**
-   * User phone number
-   */
+  /** User phone number */
   @NonNull
   @Id
   private final String mobileNumber;
 
-  /**
-   * User selected this name when they joined the channel
-   */
+  /** User selected this name when they joined the channel */
   @NonNull
   private final String displayName;
 
-  /**
-   * This member Opted Out or was banned, do not send messages
-   */
+  /** This member Opted Out or was banned, do not send messages */
   boolean doNotSend;
 
   @Indexed
   String channelId;
+
+  /** false: defaults to sending subscriber command messages, true: will not send command messags */
+  boolean silent;
 }

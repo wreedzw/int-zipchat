@@ -1,6 +1,6 @@
 package com.zipwhip.integration.zipchat.publish;
 
-import com.zipwhip.integration.zipchat.events.SubscriberEvent;
+import com.zipwhip.integration.zipchat.events.Event;
 import com.zipwhip.message.domain.InboundMessage;
 
 public interface MessagePublisher {
@@ -17,5 +17,11 @@ public interface MessagePublisher {
    * @param subEvent
    * @param message
    */
-  void publishCommandMessage(SubscriberEvent subEvent, InboundMessage message);
+  void publishCommandMessage(Event subEvent, InboundMessage message);
+
+  /**
+   * Publish event to the sender
+   * @param subEvent
+   */
+  void publishToSender(Event subEvent, InboundMessage message, String overrideMessage);
 }

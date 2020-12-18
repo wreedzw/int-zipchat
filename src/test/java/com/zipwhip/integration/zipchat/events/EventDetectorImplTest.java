@@ -23,7 +23,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.zipwhip.integration.zipchat.domain.Channel;
 import com.zipwhip.integration.zipchat.domain.Subscriber;
-import com.zipwhip.integration.zipchat.events.SubscriberEvent;
 import com.zipwhip.integration.zipchat.repository.ChannelRepository;
 import com.zipwhip.integration.zipchat.repository.SubscriberRepository;
 import com.zipwhip.message.domain.InboundMessage;
@@ -55,7 +54,7 @@ public class EventDetectorImplTest {
 
   @Test
   public void joinValidChannel() {
-    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.JOINCHANNEL.getKeyword() +
+    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.JOIN.getKeyword() +
         " " + CHAN_NAME);
 
     Optional<Event> res = eventDetector.detectEvent(inboundMessage);
@@ -64,12 +63,12 @@ public class EventDetectorImplTest {
     verify(channelRepository).findChannelByName(CHAN_NAME);
 
     assertTrue(res.isPresent());
-    assertEquals(EventType.JOINCHANNEL, res.get().getEventType());
+    assertEquals(EventType.JOIN, res.get().getEventType());
   }
 
   @Test
   public void joinValidChannelNewUser() {
-    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.JOINCHANNEL.getKeyword() +
+    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.JOIN.getKeyword() +
         " " + CHAN_NAME + " " + "BobTheNewUser");
     reset(subscriberRepository);
     when(subscriberRepository.findById(anyString())).thenReturn(Optional.empty());
@@ -80,13 +79,13 @@ public class EventDetectorImplTest {
     verify(channelRepository).findChannelByName(CHAN_NAME);
 
     assertTrue(res.isPresent());
-    assertEquals(EventType.JOINCHANNEL, res.get().getEventType());
+    assertEquals(EventType.JOIN, res.get().getEventType());
   }
 
   @Test
   public void joinInvalidChannel() {
     final String chan = "foo";
-    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.JOINCHANNEL.getKeyword() +
+    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.JOIN.getKeyword() +
         " " + chan);
 
     assertFalse(eventDetector.detectEvent(inboundMessage).isPresent());
@@ -97,7 +96,7 @@ public class EventDetectorImplTest {
 
   @Test
   public void leaveValidChannel() {
-    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.LEAVECHANNEL.getKeyword() +
+    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.LEAVE.getKeyword() +
         " " + CHAN_NAME);
 
     Optional<Event> res = eventDetector.detectEvent(inboundMessage);
@@ -106,13 +105,13 @@ public class EventDetectorImplTest {
     verify(channelRepository).findChannelByName(CHAN_NAME);
 
     assertTrue(res.isPresent());
-    assertEquals(EventType.LEAVECHANNEL, res.get().getEventType());
+    assertEquals(EventType.LEAVE, res.get().getEventType());
   }
 
   @Test
   public void leaveInvalidChannel() {
     final String chan = "foo";
-    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.LEAVECHANNEL.getKeyword() +
+    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.LEAVE.getKeyword() +
         " " + chan);
 
     assertFalse(eventDetector.detectEvent(inboundMessage).isPresent());
@@ -133,7 +132,7 @@ public class EventDetectorImplTest {
 
   @Test
   public void joinSubscriberNotFound() {
-    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.JOINCHANNEL.getKeyword() +
+    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.JOIN.getKeyword() +
         " " + CHAN_NAME);
     when(subscriberRepository.findById(anyString())).thenReturn(Optional.empty());
 
@@ -144,7 +143,7 @@ public class EventDetectorImplTest {
 
   @Test
   public void leaveSubscriberNotFound() {
-    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.LEAVECHANNEL.getKeyword() +
+    when(inboundMessage.getPayload().getBody()).thenReturn("/" + EventType.LEAVE.getKeyword() +
         " " + CHAN_NAME);
     when(subscriberRepository.findById(anyString())).thenReturn(Optional.empty());
 
