@@ -57,3 +57,5 @@ zipchat:
     stagedToStored: 6
   autoCommit: false
 
+
+rest.hostname: justo

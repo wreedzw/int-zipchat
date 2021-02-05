@@ -24,6 +24,7 @@
 
     <!-- Zipwhip Libraries -->
     <int-poller.version>1.3.7-SNAPSHOT</int-poller.version>
+    <rest-assured.version>4.2.1</rest-assured.version>
   </properties>
 
   <dependencies>
@@ -87,12 +88,27 @@
       <version>${int-test-util.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <version>${rest-assured.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
     <plugins>
 
-      <!-- JaCoCo plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <executions></executions>
+        <configuration>
+          <groups>smoke</groups>
+          <excludedGroups>something</excludedGroups>
+        </configuration>
+      </plugin><!-- JaCoCo plugin -->
+
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
